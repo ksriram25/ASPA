@@ -400,6 +400,98 @@
       </t>
     </section>
 
+<!-- Sriram's additions... updated algorithm descriptions begin -->
+
+      <section title="Upstream AS Path Validation Algorithm" anchor="Upflow2">
+<t>
+The algorithm described below is used when an UPDATE is received from a Lateral Peer, Customer, or RS-client.
+</t>
+      <t>
+        <list style="numbers">
+            <t>
+If there is an AS_SET present in the AS_PATH, then set AS_SET_Flag = 1, else set AS_SET_Flag = 0.
+</t>
+<t>
+If there is not an AS_SEQUENCE present but only an AS_SET, then the procedure halts with outcome "Unverifiable". Else, continue.
+</t>
+<t>
+Collapse prepends in the AS_SEQUENCE(s) in the AS_PATH (i.e., keep only the unique AS numbers). Let the resulting ordered sequence be represented by {AS(1), AS(2), ..., AS(N-1), AS(N)}, where AS(1) is the first-added AS in the AS_SEQUENCE and AS(N) is the last-added and neighbor to the receiving (validating) AS.
+</t>
+<t> 
+If N = 1, then jump to Step 8. Else, continue.
+</t>
+<t>
+At this step, N ≥ 2. For 2 ≤ i ≤ N, if there is an i for which AS(i) is attested "not Provider" by its left neighbor AS(i-1), then the procedure halts with outcome "Invalid". Else, continue
+</t>
+<t>
+For 1 ≤ i ≤ N-1, if there is an i for which AS(i) has no ASPA, then continue to the next step. Else, jump to Step 8
+</t>
+<t> 
+If AS_SET_Flag = 0, then the procedure halts with outcome "Unknown". Else (i.e., AS_SET_Flag = 1), the procedure halts with outcome "Unverifiable". 
+</t>
+<t>
+If AS_SET_Flag = 0, then the procedure halts with outcome "Valid". Else (i.e., AS_SET_Flag = 1), the procedure halts with outcome "Unverifiable".
+            </t>
+          </list>
+        </t>
+
+    </section>
+
+      <section title="Downstream AS Path Validation Algorithm" anchor="Downflow2">
+<t>
+The algorithm described below is used when an UPDATE is received from a Provider or RS.
+</t>
+
+      <t>
+        <list style="numbers">
+            <t>
+
+If the validating AS's role is RS-client and the RS ASN is not in the AS path, then add the RS ASN to the AS_PATH's AS_SEQUENCE (for the purposes of this procedure only).
+</t>
+<t>  
+If there is an AS_SET present in the AS_PATH, then set AS_SET_Flag = 1, else set AS_SET_Flag = 0. 
+</t>
+<t>  
+If there is not an AS_SEQUENCE present but only an AS_SET, then the procedure halts with outcome "Unverifiable". Else, continue.
+</t>
+<t>
+Collapse prepends in the AS_SEQUENCE(s) in the AS_PATH (i.e., keep only the unique AS numbers). Let the resulting ordered sequence be represented by {AS(1), AS(2), ..., AS(N-1), AS(N)}, where AS(1) is the first-added AS in the AS_SEQUENCE and AS(N) is the last-added and neighbor to the receiving/validating AS. 
+</t>
+<t> 
+If N ≤ 2, then jump to Step 12. Else, continue.
+</t>
+<t> 
+At this step, N ≥ 3. For 2 ≤ i ≤ N, determine the smallest i for which AS(i) is attested "not Provider" by its left neighbor AS(i-1). Denote such i as i_min. If i_min does not exist, then set i_min = N+1. For 1 ≤ j ≤ N-1, determine the largest j for which AS(j) is attested "not Provider" by its right neighbor AS(j+1). Denote such j as j_max. If j_max does not exist, then set j_max = 0.  If i_min ≤ j_max, then the procedure halts with outcome "Invalid". Else, continue to Step 6.
+</t>
+<t> 
+Up ramp: For 2 ≤ i ≤ N, determine the largest i (call it K) such that AS(i) is attested Provider by its left neighbor AS(i-1) for each i ≤ K. If such K does not exist, then set K = 1.
+</t>
+<t> 
+If K ≥ N-1, then jump to Step 12. Else, continue.
+</t>
+<t> 
+Down ramp: For 1 ≤ j ≤ N-1, determine the smallest j (call it L) such that AS(j) is attested Provider by its right neighbor AS(j+1) for each j ≥ L. If no such L exists, then set L = N.
+</t>
+<t> 
+If L-K ≤ 1, then jump to Step 12. Else (i.e., L-K ≥ 2), continue.
+</t>
+<t> 
+If AS_SET_Flag = 0, then the procedure halts with outcome "Unknown". Else (i.e., AS_SET_Flag = 1), the procedure halts with outcome "Unverifiable". 
+</t>
+<t> 
+If AS_SET_Flag = 0, then the procedure halts with outcome "Valid". Else (i.e., AS_SET_Flag = 1), the procedure halts with outcome "Unverifiable".
+
+</t>
+          </list>
+        </t>
+
+    </section>
+
+
+<!-- Sriram's additions... updated algorithm descriptions end -->
+
+
+
       <section title="Mitigation">
         <t>
             If the output of the AS_PATH verification procedure is "Invalid" the route MUST be rejected.
