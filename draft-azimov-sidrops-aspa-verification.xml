@@ -421,10 +421,10 @@ Collapse prepends in the AS_SEQUENCE(s) in the AS_PATH (i.e., keep only the uniq
 If N = 1, then jump to Step 8. Else, continue.
 </t>
 <t>
-At this step, N ≥ 2. For 2 ≤ i ≤ N, if there is an i for which AS(i) is attested "not Provider" by its left neighbor AS(i-1), then the procedure halts with outcome "Invalid". Else, continue
+At this step, N &ge; 2. For 2 &le; i &le;  N, if there is an i for which AS(i) is attested "not Provider" by its left neighbor AS(i-1), then the procedure halts with outcome "Invalid". Else, continue
 </t>
 <t>
-For 1 ≤ i ≤ N-1, if there is an i for which AS(i) has no ASPA, then continue to the next step. Else, jump to Step 8
+For 1 &le;  i &le;  N-1, if there is an i for which AS(i) has no ASPA, then continue to the next step. Else, jump to Step 8
 </t>
 <t> 
 If AS_SET_Flag = 0, then the procedure halts with outcome "Unknown". Else (i.e., AS_SET_Flag = 1), the procedure halts with outcome "Unverifiable". 
@@ -458,22 +458,22 @@ If there is not an AS_SEQUENCE present but only an AS_SET, then the procedure ha
 Collapse prepends in the AS_SEQUENCE(s) in the AS_PATH (i.e., keep only the unique AS numbers). Let the resulting ordered sequence be represented by {AS(1), AS(2), ..., AS(N-1), AS(N)}, where AS(1) is the first-added AS in the AS_SEQUENCE and AS(N) is the last-added and neighbor to the receiving/validating AS. 
 </t>
 <t> 
-If N ≤ 2, then jump to Step 12. Else, continue.
+If N &le;  2, then jump to Step 12. Else, continue.
 </t>
 <t> 
-At this step, N ≥ 3. For 2 ≤ i ≤ N, determine the smallest i for which AS(i) is attested "not Provider" by its left neighbor AS(i-1). Denote such i as i_min. If i_min does not exist, then set i_min = N+1. For 1 ≤ j ≤ N-1, determine the largest j for which AS(j) is attested "not Provider" by its right neighbor AS(j+1). Denote such j as j_max. If j_max does not exist, then set j_max = 0.  If i_min ≤ j_max, then the procedure halts with outcome "Invalid". Else, continue to Step 6.
+At this step, N &ge;  3. For 2 &le;  i &le;  N, determine the smallest i for which AS(i) is attested "not Provider" by its left neighbor AS(i-1). Denote such i as i_min. If i_min does not exist, then set i_min = N+1. For 1 &le; j &le; N-1, determine the largest j for which AS(j) is attested "not Provider" by its right neighbor AS(j+1). Denote such j as j_max. If j_max does not exist, then set j_max = 0.  If i_min &le; j_max, then the procedure halts with outcome "Invalid". Else, continue to Step 6.
 </t>
 <t> 
-Up ramp: For 2 ≤ i ≤ N, determine the largest i (call it K) such that AS(i) is attested Provider by its left neighbor AS(i-1) for each i ≤ K. If such K does not exist, then set K = 1.
+Up ramp: For 2 &le; i &le; N, determine the largest i (call it K) such that AS(i) is attested Provider by its left neighbor AS(i-1) for each i &le; K. If such K does not exist, then set K = 1.
 </t>
 <t> 
-If K ≥ N-1, then jump to Step 12. Else, continue.
+If K &le; N-1, then jump to Step 12. Else, continue.
 </t>
 <t> 
-Down ramp: For 1 ≤ j ≤ N-1, determine the smallest j (call it L) such that AS(j) is attested Provider by its right neighbor AS(j+1) for each j ≥ L. If no such L exists, then set L = N.
+Down ramp: For 1 &le; j &le; N-1, determine the smallest j (call it L) such that AS(j) is attested Provider by its right neighbor AS(j+1) for each j &le; L. If no such L exists, then set L = N.
 </t>
 <t> 
-If L-K ≤ 1, then jump to Step 12. Else (i.e., L-K ≥ 2), continue.
+If L-K &le; 1, then jump to Step 12. Else (i.e., L-K &ge; 2), continue.
 </t>
 <t> 
 If AS_SET_Flag = 0, then the procedure halts with outcome "Unknown". Else (i.e., AS_SET_Flag = 1), the procedure halts with outcome "Unverifiable". 
