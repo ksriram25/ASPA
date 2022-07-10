@@ -33,11 +33,25 @@
       BGP AS_PATH Verification Based on Resource Public Key Infrastructure (RPKI) Autonomous System Provider Authorization (ASPA) objects.
     </title>
 
-    <author fullname="Alexander Azimov" initials="A"
-            surname="Azimov">
+    <author fullname="Alexander Azimov" initials="A" 
+            role = "Editor" surname="Azimov">
       <organization>Yandex</organization>
       <address>
         <email>a.e.azimov@gmail.com</email>
+      </address>
+    </author>
+	  
+	      <author fullname="Kotikalapudi Sriram" initials="K." role = "Editor" surname="Sriram">
+      <organization abbrev="USA NIST">USA National Institute of Standards and Technology</organization>
+      <address>
+        <postal>
+          <street>100 Bureau Drive</street>
+          <city>Gaithersburg</city>
+          <region>MD</region>
+          <code>20899</code>
+          <country>United States of America</country>
+        </postal>
+        <email>ksriram@nist.gov</email>
       </address>
     </author>
 
