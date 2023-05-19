@@ -220,7 +220,13 @@
           An RS AS SHOULD register an AS 0 ASPA without afiLimit.
 		</t>
         <t>
-		  If, despite the above recommendations, the ASPA(s) of a CAS includes SPAS for one AFI but not for the other AFI (not even an AS 0), the ASPA SHALL NOT be rejected just for that reason. However, such an ASPA(s) will be presumed to imply that the CAS has no providers (equivalent to AS 0 SPAS) for the AFI that they neglected to include. 
+		  If, despite the above recommendations, the ASPA(s) of a CAS includes SPAS for one AFI 
+		  but not for the other AFI (not even an AS 0), the ASPA MUST be interpreted to mean 
+		  AS 0 SPAS for the AFI that the CAS neglected to include. 
+		  In this case, at a later time, if the ASPA(s) in consideration is withdrawn
+		  and no other ASPA for the CAS is present, then the AS 0 SPAS for
+		  the neglecetd AFI mentioned MUST be removed (withdrawn) and
+		  the VAP-SPAS table MUST have no entry for the CAS for either AFI. 
 		</t>
         <t>
 
@@ -281,9 +287,11 @@ hop(AS(i), AS(j), AFI) =  / Else, "Provider+" if VAP-SPAS entry for
         This function is used in the ASPA-based AS_PATH verification algorithms described in <xref target="Upflow"/> and <xref target="Downflow"/>.
         For simplicity, while describing the algorithms, the function hop(AS(i), AS(j), AFI) is replaced with hop(AS(i), AS(j)) by dropping the AFI since it is understood that the algorithms are run for a specific AFI at a time (AFI = 1 or AFI = 2).
       </t>
+	    <!--
 	 <t>
          For purposes such as computational efficiency, memory savings, etc., an implementation may make its own choice regarding maintaining a single VAP-SPAS table or two separate tables (i.e., one per AFI).
        </t>
+            -->
 
     </section>
  
@@ -528,7 +536,7 @@ hop(AS(i), AS(j), AFI) =  / Else, "Provider+" if VAP-SPAS entry for
 
   <section title="Mitigation" anchor="mitig">
     <t>
-      If the AS_PATH is determined to be Invalid based on the verification procedures specified above (<xref target="verif"/>), then the route SHOULD be rejected. Also, for any route with an Invalid AS_PATH, the cause of the invalidity SHOULD be logged for monitoring and diagnostic purposes.
+      If the AS_PATH is determined to be Invalid based on the verification procedures specified above (<xref target="verif"/>), then the route SHOULD be treated-as-withdraw. Also, for any route with an Invalid AS_PATH, the cause of the invalidity SHOULD be logged for monitoring and diagnostic purposes.
     </t>
     <t>
       The ASPA-based path verification procedures are able to check routes received from customers, lateral peers, transit providers, RSes, RS-clients, and siblings.
@@ -593,7 +601,7 @@ In the description of the properties listed above, the term "customer" can be re
       <t>
         ASPA issuers should be aware of the implications of ASPA-based AS path verification.
         Network operators must keep their ASPA objects correct and up to date.
-        Otherwise, for example, if a provider AS is left out of the Set of Provider ASes (SPAS) in the ASPA, then routes containing the CAS (in the ASPA) and said provider AS may be incorrectly labeled as route leaks and rejected.
+        Otherwise, for example, if a provider AS is left out of the Set of Provider ASes (SPAS) in the ASPA, then routes containing the CAS (in the ASPA) and said provider AS may be incorrectly labeled as route leaks and treated-as-withdraw.
       </t>
     </section>
     <section title="Make Before Break">
