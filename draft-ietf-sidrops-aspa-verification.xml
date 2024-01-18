@@ -11,7 +11,7 @@
 <?rfc subcompact="no" ?>
 
 <rfc category="std"
-     docName="draft-ietf-sidrops-aspa-verification-16"
+     docName="draft-ietf-sidrops-aspa-verification-17"
      submissionType="IETF"
      consensus="true"
      ipr="trust200902">
@@ -106,9 +106,9 @@
 
     <abstract>
       <t>
-        This document describes procedures that make use of Autonomous System Provider Authorization (ASPA) objects in the 
-		Resource Public Key Infrastructure (RPKI) to verify the Border Gateway Protocol (BGP) AS_PATH attribute of advertised routes.
-        This type of AS_PATH verification provides detection and mitigation of route leaks and improbable AS paths.
+        This document describes procedures that make use of Autonomous System Provider Authorization (ASPA) objects in the
+        Resource Public Key Infrastructure (RPKI) to verify the Border Gateway Protocol (BGP) AS_PATH attribute of advertised routes.
+        This type of AS_PATH verification provides detection and mitigation of route leaks.
         It also provides protection, to some degree, against prefix hijacks with forged-origin or forged-path-segment.
       </t>
     </abstract>
@@ -128,14 +128,14 @@
       </t>
       <t>
         This document describes procedures that make use of Autonomous System Provider Authorization (ASPA) objects <xref target="I-D.ietf-sidrops-aspa-profile"/> in the RPKI to verify properties of the BGP AS_PATH attribute of advertised routes.
-        ASPA-based AS_PATH verification provides detection and mitigation of route leaks and improbable AS paths.
+        ASPA-based AS_PATH verification provides detection and mitigation of route leaks.
         It also provides protection, to some degree, against prefix hijacks with forged-origin or forged-path-segment (<xref target="property"/>).
-        These new ASPA-based procedures automatically detect such anomalous AS_PATHs in announcements that are received from customers, lateral peers (defined in <xref target="RFC7908"/>), transit providers, IXP Route Servers (RS), RS-clients, and mutual-transits.
+        These new ASPA-based procedures automatically detect such anomalous AS_PATHs in announcements that are received from customers, lateral peers (i.e., non-transit), transit providers, IXP Route Servers (RS), RS-clients, and mutual-transits.
         The protections provided by these procedures (together with RPKI-ROV) are based on cryptographic techniques, and they are effective against many accidental and malicious actions.
       </t>
       <t>
         ASPA objects are cryptographically signed registrations of customer-to-provider relationships and stored in a distributed database <xref target="I-D.ietf-sidrops-aspa-profile"/>.
-        ASPA-based path verification is an incrementally deployable technique and provides benefits to early adopters in the context of limited deployment.
+        ASPA-based path verification is an incrementally deployable technique and provides benefits to early adopters in the context of limited deployment (<xref target="property"/>).
       </t>
       <t>
         The procedures described in this document are applicable only for BGP routes with {AFI, SAFI} combinations {AFI 1 (IPv4), SAFI 1} and {AFI 2 (IPv6), SAFI 1} <xref target="IANA-AF"/>.
@@ -144,12 +144,12 @@
 
     <section title="Anomaly Propagation" anchor="propagation">
       <t>
-        Both route leaks and hijacks have similar effects on ISP operations - they redirect traffic and can result in denial of service (DoS), eavesdropping, increased latency, and packet loss.
+        Both route leaks and hijacks have similar effects on ISP operations; they redirect traffic and can result in denial of service (DoS), eavesdropping, increased latency, and packet loss.
         The level of risk, however, depends significantly on the extent of propagation of the anomalies.
         For example, a route leak or hijack that is propagated only to customers may cause bottlenecking within a particular ISP's customer cone, but if the anomaly propagates through lateral (i.e., non-transit) peers and transit providers, or reaches global distribution through transit-free networks, then the ill effects will likely be amplified and experienced across continents.
       </t>
       <t>
-        The ability to constrain the propagation of BGP anomalies to transit providers and lateral peers - without requiring support from the source of the anomaly (which is critical if the source has malicious intent) - should significantly improve the robustness of the global inter-domain routing system.
+        The ability to constrain the propagation of BGP anomalies to transit providers and lateral peers -- without requiring support from the source of the anomaly (which is critical if the source has malicious intent) -- should significantly improve the robustness of the global inter-domain routing system.
       </t>
     </section>
     <section title="Requirements Language" anchor="req">
@@ -162,48 +162,45 @@
         </t>
     </section>
   </section>
-
-      <section title="Terminology" anchor="terminology">
+      <section title="Terminology and List of Acronyms" anchor="terminology">
          <t>
            The following terms are used with special meanings.
          </t>
          <t>
            <list style="hanging">
-                <t hangText="Provider:">
-                   The term "provider" is synonymously with "transit provider", see <xref target="I-D.ietf-sidrops-aspa-profile" sectionFormat="comma" section="1"/>.
-                </t>
-
-                <t hangText="Customer:">
-                   An autonomous system uses a provider for transit, see <xref target="I-D.ietf-sidrops-aspa-profile" sectionFormat="comma" section="1"/>.
-                </t>
-
-                <t hangText="CAS:">
-                  A Customer AS, see <xref target="I-D.ietf-sidrops-aspa-profile" sectionFormat="comma" section="1"/>.
-                </t>
-
-                <t hangText="PAS:">
-                  A Provider AS, see  <xref target="I-D.ietf-sidrops-aspa-profile" sectionFormat="comma" section="1"/>.
-                </t>
-
                 <t hangText="Route is ineligible:">
-                   The term has the same meaning as in <xref target="RFC4271"/>, i.e., "route is ineligible to be installed in Loc-RIB and will be excluded from the next phase of route selection."
+                  The term has the same meaning as in <xref target="RFC4271"/>, i.e., "route is ineligible to be installed in Loc-RIB and will be excluded from the next phase of route selection."
                 </t>
-
+                <t hangText="Provider:">
+                  The term "provider" is used synonymously with "transit provider" (<xref target="I-D.ietf-sidrops-aspa-profile" sectionFormat="comma" section="1"/>).
+                </t>
+                <t hangText="Customer:">
+                  An autonomous system that uses a provider for transit (<xref target="I-D.ietf-sidrops-aspa-profile" sectionFormat="comma" section="1"/>).
+                </t>
+                <t hangText="Lateral peer:">
+                The term "lateral peer" is synonymous with "non-transit" or "peer-to-peer" relationship. (<xref target="RFC7908"/>, Section 3.2).
+                </t>
+                <t hangText="CAS:">
+                  Customer AS (<xref target="I-D.ietf-sidrops-aspa-profile" sectionFormat="comma" section="1"/>).
+                </t>
+                <t hangText="PAS:">
+                  Provider AS (<xref target="I-D.ietf-sidrops-aspa-profile" sectionFormat="comma" section="1"/>).
+                </t>
                 <t hangText="SPAS:">
-		   A Set of Provider ASes, see <xref target="I-D.ietf-sidrops-aspa-profile" sectionFormat="comma" section="3"/>.
+                  Set of Provider ASes (<xref target="I-D.ietf-sidrops-aspa-profile" sectionFormat="comma" section="3"/>).
                 </t>
-
                 <t hangText="VAP:">
-		   A Validated ASPA Payload, see <xref target="ASPA"/>.
+                  Validated ASPA Payload (<xref target="ASPA"/>).
                 </t>
-
                 <t hangText="VAP-SPAS:">
-		   A Validated ASPA Payload of a set of provider ASes, see <xref target="ASPA"/>.
+                  Set of Provider ASes contained in Validated ASPA Payload (<xref target="ASPA"/>).
+                </t>
+                <t hangText="Provider+:">
+                  The term "Provider+" in the definition of the hop-check function is meant to encompass all three possibilities: Provider, non-transparent RS, or mutual-transit neighbor (<xref target="pair-validation"/>).
                 </t>
            </list>
          </t>
       </section>
-
       <section title="BGP Roles" anchor="role">
         <t>
          For path verification purposes in this document, the BGP roles an AS can have in relation to a neighbor AS are customer, provider, lateral peer, Route Server (RS), RS-client, and mutual-transit.
@@ -212,7 +209,7 @@
          For mutual-transit ASes, the customer-to-provider relationship applies in each direction.
        </t>
        <t>
-         All roles are configured locally and used for the registration of ASPA objects (<xref target="ASPA"/>, <xref target="rec1"/>) and/or for path verification (<xref target="verif"/>).
+         All roles are configured locally. They are used for the registration of ASPA objects (<xref target="ASPA"/>, <xref target="rec1"/>) and/or for path verification (<xref target="verif"/>).
          The procedures for local BGP Role announcement in the BGP OPEN message and neighbor role cross-check specified in <xref target="RFC9234"/> are RECOMMENDED.
          Those procedures are not applied for cross-checking a mutual-transit role since this role is not specified in <xref target="RFC9234"/>.
        </t>
@@ -227,8 +224,8 @@
         Another function is to offer outbound (customer to Internet) data traffic connectivity to the CAS.
       </t>
       <t>
-        The notation (AS x, {AS y1, AS y2, ...}), is used to represent an ASPA object for a CAS denoted as AS x.
-        In this notation, the set {AS y1, AS y2, ...} represents the Set of Provider ASes (SPAS) of the CAS (AS x).
+        The notation (AS x, [AS y1, AS y2, ...]), is used to represent an ASPA object for a CAS denoted as AS x.
+        In this notation, the set [AS y1, AS y2, ...] represents the Set of Provider ASes (SPAS) of the CAS (AS x).
         A CAS is expected to register a single ASPA listing all its Provider ASes (see <xref target="rec1"/>).
         If a CAS has a single ASPA, then the SPAS for the CAS is the set of Provider ASes listed in that ASPA.
         In case a CAS has multiple ASPAs, then the SPAS is the union of the Provider ASes listed in all ASPAs of the CAS.
@@ -244,7 +241,7 @@
           An ASPA object showing only AS 0 as a provider AS is referred to as an AS0 ASPA.
           A non-transparent Route Server AS (RS AS) is one that includes its AS number in the AS_PATH.
           Registering as AS0 ASPA is a statement by the registering AS that it has no transit providers, and it is also not an RS-client at a non-transparent RS AS.
-          If that statement is true, then the AS MUST register an AS 0 ASPA.
+          If that statement is true, then the AS MUST register an AS0 ASPA.
         </t>
         <t>
           Normally, the Provider ASes of a CAS would be congruent for the address family combinations {AFI 1 (IPv4), SAFI 1} and {AFI 2 (IPv6), SAFI 1}.
@@ -253,9 +250,9 @@
           In the procedures for the AS path verification described in this document (<xref target="pair-validation"/>, <xref target="verif"/>), the SPAS is always considered to be uniformly applicable to {AFI 1 (IPv4), SAFI 1} and {AFI 2 (IPv6), SAFI 1}.
         </t>
         <t>
-          A compliant AS, including a Route Server AS (RS AS), MUST have an ASPA.
+          A compliant AS or Route Server AS (RS AS) MUST have an ASPA. 
           An AS SHOULD NOT have more than one ASPA.
-          An RS AS SHOULD register an AS 0 ASPA.
+          An RS AS SHOULD register an AS0 ASPA.
         </t>
         <t>
           As mentioned in <xref target="ASPA"/>, the set of provider ASes contained in the VAP(s) is referred to as the VAP-SPAS of the AS registering the ASPA(s).
@@ -282,7 +279,7 @@
           A hop-check function, hop(AS(i), AS(j)), checks if the ordered pair of ASNs, (AS(i), AS(j)), has the property that AS(j) is an attested provider of AS(i) per VAP-SPAS of AS(i).
           The VAP-SPAS table is assumed to be organized in such a way that it can be queried to check (1) if a specified CAS = AS(i) has an entry (i.e., SPAS listed), or (2) if for a given (AS(i), AS(j)) tuple, AS(j) is listed in the VAP-SPAS as a provider associated with CAS = AS(i).
           A provider AS ID included in the SPAS can correspond to a Provider, a non-transparent RS, or a mutual-transit neighbor.
-          A non-transparent RS is effectively a Provider to its RS-client.		
+          A non-transparent RS is effectively a Provider to its RS-client.
           Mutual-transit neighbors regard each other as a Provider (see <xref target="rec1"/>).
           The term "Provider+" in the definition of the hop-check function is meant to encompass all three possibilities: Provider, non-transparent RS, or mutual-transit neighbor.
           This function is specified as follows:
@@ -335,10 +332,74 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
         In the current document, routes with AS_SET are given Invalid evaluation in the AS_PATH verification procedures (<xref target="Upflow"/> and <xref target="Downflow"/>).
         See <xref target="mitigation"/> for how routes with Invalid AS_PATH are handled.
       </t>
+
+    <section title="Semantics of Valid, Invalid, and Unknown" anchor="semantics">
       <t>
-        In <xref target="Upflow"/> and <xref target="Downflow"/> below, the terms "upstream path" and "downstream path" generally refer to AS paths received in the upstream direction (from a customer or a lateral peer) and in the downstream direction (from a provider or a mutual-transit neighbor), respectively.
-        An RS-client receiving a route from its RS is a special case where the algorithm for upstream paths is applied (<xref target="Upflow"/>).
+        The ASPA-based path verification algorithms (<xref target="Upflow"/> and <xref target="Downflow"/>) evaluate an AS_PATH as Valid, Invalid, or Unknown.
+        'Invalid' outcome means that the AS_PATH contains a route leak (i.e., valley-free violation) based on the available ASPAs.
+        Even if the actual attack on the AS_PATH attribute was a forged-origin hijack or forged-path-segment hijack
+        or other AS path modification,
+        and the associated conditions permit its detectability by ASPA (see <xref target="property"/>), it would be effectively manifest as a route leak and hence ASPA would detect the route as Invalid.
+        The algorithms do not further identify the specific type of anomaly.
+        'Valid' outcome means that sufficient ASPA information is available to determine that the AS_PATH attribute as presented is route-leak free (i.e., valley free). When the outcome is not Valid or Invalid, then it is Unknown by default.
       </t>
+    </section>
+    <section title="Basic Principles of Route Leak Detection and Reason for Separate Upstream and Downstream Algorithms" anchor="basic">
+      <t>
+        In <xref target="Upflow"/> and <xref target="Downflow"/> below, the terms "upstream path" and "downstream path" generally refer to AS paths received in the upstream direction (from a customer or a lateral peer) and the downstream direction (from a provider), respectively.
+        The basic principles of route leak detection and the reason for separate algorithms for upstream and downstream paths are described below.
+      </t>
+      <t>
+        Let some acronyms be defined for AS hop types as follows: P2C = provider-to-customer, C2P = customer-to-provider, and P2P = peer-to-peer (i.e., lateral peers).
+        Consider the full AS path of a BGP Update consisting of sequential AS hops from the origin AS to the receiving/verifying AS.
+        Let the unique ASes in this path be represented by AS(k), i = 1, 2,... , N+1, where AS(1) is the origin AS and AS(N+1) is the receiving/verifying AS.
+        As illustrated in <xref target="fig5"/>, the AS path is considered a route leak (i.e., valley free violation <xref target="RFC7908"/>) if for
+        some i and j (j &ge; i+1), the hop AS(i) to AS(i+1) is either a P2C or p2p while
+        the hop from AS(j+1) to AS(j) is also a P2C or p2p.
+        Note that the AS(j+1) to AS(j) hop is checked in a direction opposite to the Update flow direction.  
+        There are four combinations here and they are illustrated as A, B, C, and D in <xref target="fig5"/>.
+        For the upstream path, AS(N+1) to AS(N) obviously known to be P2C or P2P,
+        hence the value of j can always be set equal to N.
+        So, for determining if an upstream path is Invalid (route leak), all that is needed is to find an i (1 &lt; i &lt; N-1)
+        for which AS(i+1) is not a provider of AS(i) per AS(i)'s ASPA.
+        This makes the algorithm for upstream paths quite simple.
+        For the downstream path, j is obviously not equal to N, and hence both i and j have to be searched for
+        (in the range between 1 and N-1) by checking the AS hops from left to right and right to left
+        with the help of the ASPAs. The hop-check function (<xref target="pair-validation"/>) is utilized here.
+        The algorithm for downstream paths is therefore more complex and requires more computations compared to the algorithm for upstream paths.
+        Thus, it is prudent to use separate algorithms for the verification of upstream and downstream paths (<xref target="Upflow"/> and <xref target="Downflow"/>, respectively).
+      </t>
+      <t>
+        <figure anchor="fig5" align="left" suppress-title="false" pn="figure-2">
+          <name slugifiedName="route-leak">Illustration of the four route leak types (valley-free violations) . </name>
+          <artwork align="left" name="" type="" alt="">
+<![CDATA[
+                 <-------- Update flow direction ------
+ (A) .... AS(j+1)              ........                AS(i) ....
+             \_____(P2C)___                 ____(P2C)___/
+                           \               /
+                           \/             \/
+                          A(j)          AS(i+1)
+
+ (B) .... AS(j+1)---(P2P)--->A(j)   ........           AS(i) ....
+                                             ___(P2C)___/
+                                            /
+                                           \/
+                                           AS(i+1)
+
+ (C) .... AS(j+1)            ......   AS(i+1)<---P2P---AS(i) ....
+             \_____P2C_____          
+                           \            
+                           \/           
+                          A(j)
+
+ (D) .... AS(j+1)---(P2P)--->A(j) ..... AS(i+1)<---P2P---AS(i) ....
+                               
+]]>
+</artwork>
+        </figure>
+      </t>
+    </section>
     <section title="Algorithm for Upstream Paths" anchor="Upflow">
       <t>
         The upstream verification algorithm described here is applied when a route is received from a customer or lateral peer, or is received by an RS from an RS-client, or is received by an RS-client from an RS.
@@ -346,9 +407,9 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
       </t>
       <t>
         The basic principles of the upstream verification algorithm are stated here.
-        Let the sequence {AS(N), AS(N-1),..., AS(2), AS(1)} represent the AS_PATH in terms of unique ASNs, where AS(1) is the origin AS and AS(N) is the most recently added AS and neighbor of the receiving/validating AS.
+        Let the sequence {AS(N), AS(N-1),..., AS(2), AS(1)} represent the AS_PATH in terms of unique ASNs, where AS(1) is the origin AS and AS(N) is the most recently added AS and neighbor of the receiving/verifying AS.
         For each hop AS(i-1) to AS(i) in this sequence, the hop-check function, hop(AS(i-1), AS(i)), must equal "Provider+" (<xref target="pair-validation"/>) for the AS_PATH to be Valid.
-        If the hop-check function for at least one of those hops is "Not Provider+", then the AS_PATH is deemed Invalid.
+        If the hop-check function for at least one of those hops is "Not Provider+", then the AS_PATH is deemed Invalid (see <xref target="basic"/>).
         If the AS_PATH verification outcome is neither Valid nor Invalid (per the above principles), then it is evaluated as Unknown.
       </t>
       <t>
@@ -361,7 +422,7 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
           </t>
           <t>
             Collapse prepends in the AS_SEQUENCE(s) in the AS_PATH (i.e., keep only the unique AS numbers).
-            Let the resulting ordered sequence be represented by {AS(N), AS(N-1), ..., AS(2), AS(1)}, where AS(1) is the first-added (i.e., origin) AS and AS(N) is the last-added AS and neighbor to the receiving/validating AS.
+            Let the resulting ordered sequence be represented by {AS(N), AS(N-1), ..., AS(2), AS(1)}, where AS(1) is the first-added (i.e., origin) AS and AS(N) is the last-added AS and neighbor to the receiving/verifying AS.
           </t>
           <t>
             If N = 1, then the procedure halts with the outcome "Valid".
@@ -379,19 +440,19 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
       </t>
 <!--    
       <section title="About Path verification at IXP RS AS and RS-Client" anchor="RS-client">
-	<t>
-	As stated above (top of <xref target="Upflow"/>), the algorithm for upstream paths is applied for path verification at IXP RS AS and RS-clients. 
-	The justifications are as follow. 
-	The RS-client to RS AS relationship is effectively a customer-to-provider relationship.
-	The RS AS propagates the routes of an RS-client and its customers to other RS-clients. 
-	An RS-client at a transparent RS effectively has a lateral peer relationship with other RS-clients that it connects to via the RS. 
-	So, the algorithm for upstream paths clearly applies at an RS AS and at RS-clients of a transparent RS.
+<t>
+      As stated above (top of <xref target="Upflow"/>), the algorithm for upstream paths is applied for path verification at IXP RS AS and RS-clients. 
+      The justifications are as follow. 
+      The RS-client to RS AS relationship is effectively a customer-to-provider relationship.
+      The RS AS propagates the routes of an RS-client and its customers to other RS-clients. 
+      An RS-client at a transparent RS effectively has a lateral peer relationship with other RS-clients that it connects to via the RS. 
+      So, the algorithm for upstream paths clearly applies at an RS AS and at RS-clients of a transparent RS.
         </t>
         <t>
-	Since an RS AS (transparent or non-transparent) does not have providers or lateral peers, an RS-client of a non-transparent RS expects an AS_PATH it receives to be consisting of only customer-to-provider hops successively from AS(1) (origin) the AS(N) (neighbor which is the RS AS). 
-	This expectation is identical to what is expected when the UPDATE is received from a customer or lateral peer. 
-	Hence, the algorithm for upstream paths applies also at an RS-client of a non-transparent RS.  
-	</t>
+      Since an RS AS (transparent or non-transparent) does not have providers or lateral peers, an RS-client of a non-transparent RS expects an AS_PATH it receives to be consisting of only customer-to-provider hops successively from AS(1) (origin) the AS(N) (neighbor which is the RS AS). 
+      This expectation is identical to what is expected when the UPDATE is received from a customer or lateral peer. 
+      Hence, the algorithm for upstream paths applies also at an RS-client of a non-transparent RS.  
+     </t>
       </section>
 -->
     </section>
@@ -401,7 +462,7 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
         As described in <xref target="rec1"/>, a sending mutual-transit AS acts towards its receiving mutual-transit AS in a manner similar to that of a provider towards its customer.
       </t>
       <t>
-        It is not essential, but the reader may take a look at the illustrations and formal proof in <xref target="sriram1"/> to develop a clearer understanding of the algorithm described here.
+        It is not essential, but the reader may take a look at the illustrations and formal proof in <xref target="sriram1"/> <xref target="sriram2"/> to develop a clearer understanding of the algorithm described here. 
       </t>
       <t>
         Here again (as in <xref target="Upflow"/>), let the AS_PATH be simplified and represented by the ordered sequence of unique ASNs as {AS(N), AS(N-1),..., AS(2), AS(1)}.
@@ -412,12 +473,12 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
       <t>
         <xref target="principles"/> below assumes that the AS_PATH contains 3 or more unique ASNs (N >= 3).
       </t>
-	<section title="Principles for Determination of Invalid, Valid, and Unknown in Downstream Path Verification (for N >= 3)" anchor="principles">
+    <section title="Principles for Determination of Invalid, Valid, and Unknown in Downstream Path Verification (N >= 3)" anchor="principles">
       <t>
         <strong>Determination of Invalid AS_PATH:</strong>
       </t>
       <t>
-        Given the above-mentioned ordered sequence, if there exist indices u and v such that (1) u &lt;= v, (2) hop(AS(u-1), AS(u)) = "Not Provider+", and (3) hop(AS(v+1), AS(v)) = "Not Provider+", then the AS_PATH is Invalid.
+        Given the above-mentioned ordered sequence, if there exist indices u and v such that (1) u &lt;= v, (2) hop(AS(u-1), AS(u)) = "Not Provider+", and (3) hop(AS(v+1), AS(v)) = "Not Provider+", then the AS_PATH is Invalid (see <xref target="basic"/>).
       </t>
       <t>
         ------------
@@ -429,7 +490,7 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
         As shown in <xref target="fig2"/>, assume that the ASes in the AS_PATH are in the same physical (locational) order as in the sequence representation {AS(N), AS(N-1),..., AS(2), AS(1)}, i.e., AS(N) is the left-most and AS(1) the right-most.
       </t>
       <t>
-        <figure anchor="fig2" align="left" suppress-title="false" pn="figure-2">
+        <figure anchor="fig2" align="left" suppress-title="false" pn="figure-3">
           <name slugifiedName="ramp-illustration">Illustration of up-ramp and down-ramp. </name>
           <artwork align="left" name="" type="" alt="">
 <![CDATA[
@@ -446,7 +507,7 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
                 /                                \
              AS(N)                               AS(1)
               /                                (Origin AS)
-    Receiving & Validating AS
+    Receiving & verifying AS
 
         Each ramp has consecutive ASPA-attested
         customer-to-provider hops in the bottom-to-top direction
@@ -498,7 +559,7 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
           </t>
           <t>
             Collapse prepends in the AS_SEQUENCE(s) in the AS_PATH (i.e., keep only the unique AS numbers).
-            Let the resulting ordered sequence be represented by {AS(N), AS(N-1), ..., AS(2), AS(1)}, where AS(1) is the first-added (i.e., origin) AS and AS(N) is the last-added AS and neighbor to the receiving/validating AS.
+            Let the resulting ordered sequence be represented by {AS(N), AS(N-1), ..., AS(2), AS(1)}, where AS(1) is the first-added (i.e., origin) AS and AS(N) is the last-added AS and neighbor to the receiving/verifying AS.
           </t>
           <t>
             If 1 &le; N &le; 2, then the procedure halts with the outcome "Valid".
@@ -521,8 +582,8 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
           </t>
 <!--
             <t>
-	If K = N, then the procedure halts with the outcome "Valid".
-	Else, continue.
+             If K = N, then the procedure halts with the outcome "Valid".
+             Else, continue.
             </t>
 -->
           <t>
@@ -541,92 +602,117 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
       </section>
     </section>
   </section>
-  <section title="Deployment Recommendations"> 
-    <t>This section describes practical deployment recommendations related to implemenation and operation of ASPA.</t>
 
-    <section anchor="ingress" title="Running ASPA on Inter-AS Border Routers">
-      <t>ASPA SHOULD run on any eBGP router.</t>
-      <t>Procedures for ASPA-based AS_PATH verification and mitigation described in this document are NOT RECOMMENDED for use within an AS, including eBGP links internal to a BGP Confederation.</t>
-    </section>
-
-    <section title="Address Families">
+  <section title="Implementation and Deployment Recommendations" anchor="implement">
+     <t>
+      This section describes practical implementation and deployment recommendations.
+     </t>
+     <t>     
+      The procedures for ASPA-based AS_PATH verification and anomaly mitigation discussed in this document are intended for implementation on eBGP routers, including those on the boundary of an AS Confederation facing external ASes.
+      However, they are NOT RECOMMENDED for use on internal BGP (iBGP) sessions or eBGP sessions internal to an AS Confederation.
+      Also, this document specifies the procedures for use on eBGP ingress.
+      Consideration of procedures for use on eBGP egress is out of scope of this document.
+     </t>
+     <t>
+      The verification procedures described in this document MUST be applied to BGP routes with {AFI, SAFI} combinations {AFI 1 (IPv4), SAFI 1} and {AFI 2 (IPv6), SAFI 1} <xref target="IANA-AF"/>.
+      The procedures MUST NOT be applied to other address families by default.
+     </t>
+   <section title="Implementation of Verification Algorithm" anchor="impl-verif">
+     <t>
+      Implementations of this specification are not required to implement the AS_PATH verification procedures (list of steps) exactly as described in <xref target="Upflow"/> and <xref target="Downflow"/> but MUST provide functionality (i.e., verification outcomes) equivalent to the external behavior resulting from those procedures.
+      Therefore, an implementation may differ, for example, for computational efficiency purposes.
+     </t>
+   </section>
+   <section anchor="mitigation" title="Mitigation Policy">
       <t>
-	The verification procedures described in this document MUST be applied to BGP routes with {AFI, SAFI} combinations {AFI 1 (IPv4), SAFI 1} and {AFI 2 (IPv6), SAFI 1} [IANA-AF]. 
-	The procedures MUST NOT be applied to other address families by default.
-      </t>
-    </section>
-
-    <section title="Implementation of Verification Algorithm">
-      <t>
-	Implementations of this specification are not required to implement the AS_PATH verification procedures exactly as described in Section XX but MUST provide functionality equivalent to the external behavior resulting from those procedures. 
-	Therefore, implementation may differ, for example, for computational efficiency purposes.
-      </t>
-    </section>
-
-    <section anchor="mitigation" title="Configuration of a Route Leak Mitigation Policy">
-      <t>
-	The specific configuration of mitigation policies based on AS_PATH verification using ASPA is at the discretion of the network operator. 
-	The following policies are highly recommended, though.
-      </t>
-      <t>
-	<strong>Invalid</strong>: 
-	If the AS_PATH is determined to be Invalid, then the route SHOULD be considered ineligible for route selection (see Section 1.2). 
-	The route SHOULD not be considered further but MUST be kept in the Adj-RIB-In for potential future re-evaluation (see [RFC9324]).
+       The specific configuration of a mitigation policy based on AS_PATH verification using ASPA is at the discretion of the network operator.
+       However, the following mitigation policy is highly encouraged.
       </t>
       <t>
-	<strong>Valid and Unknown</strong>: 
-	Any Valid or Unknown AS_PATH SHOULD not be distinguished in the route selection process because of the ASPA validation outcome, but prefered over an Invalid AS_PATH.
+      <strong>Invalid</strong>: 
+       If the AS_PATH is determined to be Invalid, then the route SHOULD be considered ineligible for route selection
+       (see <xref target="terminology"/>) and MUST be kept in the Adj-RIB-In for potential future re-evaluation (see <xref target="RFC9324"/>).
       </t>
-    </section>
-
-    <section title="Logging" anchor="logging">
       <t>
-	For any route with an Invalid AS_PATH, the cause of the Invalid state SHOULD be logged for monitoring and diagnostic purposes. 
-	The cause of the Invalid state can be in the form of listing the AS hops which were evaluated by the hop-check function to be &quot;Not Provider+&quot;.
-	The logging router, however, cannot necessarily determine the origin of the route leak.
+      <strong>Valid or Unknown</strong>: 
+       When a route is evaluated as Unknown (using ASPA-based AS_PATH verification), it SHOULD be treated at the same preference level as a route evaluated as Valid.
       </t>
-    </section>
-
-    <section title="Only to Customer (OTC) Attribute" anchor="otc">
+   </section>
+   <section title="Logging" anchor="logging">
       <t>
-        While the ASPA-based AS_PATH verification method (<xref target="ingress"/>) detects and mitigates route leaks that were created by preceding ASes listed in the AS_PATH, 
-	it lacks the ability to prevent route leaks from occuring at the local AS. 
-	The use of the Only to Customer (OTC) Attribute <xref target="RFC9234"/> fills in that gap. 
-	The procedures utilizing the OTC Attribute set out in <xref target="RFC9234"/> complement those described in this document. 
-	Implementation of those procedures in addition to ASPA-based AS_PATH verification is encouraged.
+       For any route with an Invalid AS_PATH, the cause of the Invalid state SHOULD be logged for monitoring and diagnostic purposes.
+       The cause of the Invalid state can be recorded in the form of listing the AS hops which were evaluated by the hop-check function to be &quot;Not Provider+&quot;.
+       The logging router, however, cannot necessarily determine the AS that caused the route leak.
+       For any route with an Unknown AS_PATH, the cause of the Unknown state MAY be logged for monitoring and diagnostic purposes.
+       If logging is done for the Unknown case, the cause can be recorded in the form of listing the AS hops which were evaluated by the hop-check function to be "No Attestation" or "Not Provider+".
       </t>
-    </section>
+   </section>
+  <!--
+  <section title="Verification and Mitigation at Egress eBGP Router" anchor="egress">
+    <t>
+      <strong>Verification:</strong> The procedures for AS_PATH verification (<xref target="verif"/>) are also applicable at egress eBGP routers for preventing an AS from sending routes with Invalid AS_PATH to its eBGP neighbors (see <xref target="RFC8893"/> for a comparable idea for the RPKI-ROV case).
+      An egress eBGP router MUST add the AS of the router's BGP configuration (see <xref target="RFC8481"/> <xref target="RFC8893"/>) to the received AS_PATH (received in iBGP) and then apply the path verification procedures.
+      When redistributing into BGP from any source (e.g., IGP, iBGP, or from static or connected routes), there is no AS_PATH in the input route.
+      In such cases, the egress eBGP router MUST use the AS of the router's BGP configuration to form the AS_PATH for verification (see <xref target="RFC8481"/>).
+   </t>
+   <t>
+     <strong>Mitigation:</strong> Again, mitigation recommendations are provided here with the understanding that the deployed mitigation policy is set by network operator discretion.
+     If the outcome of applying the upstream algorithm (<xref target="Upflow"/>) is Invalid, then the route SHOULD NOT be propagated to a transit provider, lateral peer, RS (local AS has RS-client role), or RS-client (local AS has RS role).
+     If the outcome of applying the downstream algorithm (<xref target="Downflow"/>) is Invalid, then the route SHOULD NOT be propagated to an eBGP neighbor regardless of its BGP role (<xref target="role"/>).
+   </t>
+  </section>
+  -->
+   <section title="Only to Customer (OTC) Attribute" anchor="otc">
+   <t>
+    While the ASPA-based AS_PATH verification method (<xref target="verif"/>, <xref target="impl-verif"/>) detects and mitigates route leaks that were
+    created by preceding ASes listed in the AS_PATH, it lacks the ability to prevent route leaks from occurring at the local AS.
+    The use of the Only to Customer (OTC) Attribute <xref target="RFC9234"/> fills in that gap.
+    The procedures utilizing the OTC Attribute set out in <xref target="RFC9234"/> complement those described in this document.
+    Implementation of those procedures in addition to ASPA-based AS_PATH verification is encouraged.
+   </t>
+   </section>
   </section>
 <!--
-	<t>
+  <t>
       The procedures specified in this document may be used in scenarios that use private AS numbers behind an Internet-facing ASN (e.g., a data-center network <xref target="RFC7938"/> or stub customer), but any details are outside the scope of this document.
-	</t>
+  </t>
 -->
 
   <section title="Properties of ASPA-based Path Verification" anchor="property">
     <t>
       The ASPA-based path verification procedures are able to check routes received from customers, lateral peers, transit providers, RSes, RS-clients, and mutual-transits.
       These procedures combined with BGP Roles and the OTC Attribute <xref target="RFC9234" /> and RPKI-ROV <xref target="RFC6811"/> <xref target="RFC9319"/> can provide a fully automated solution to detect and filter many of the ordinary prefix hijacks, route leaks, and prefix hijacks with forged-origin or forged-path-segment (see Property 3 below).
+      There are some AS path manipulation attacks that are not detected by the ASPA-based path verification (see <xref target="security"/>).
     </t>
     <t>
-      The ASPA-based path verification at ingress eBGP routers (<xref target="verif" />, <xref target="ingress" />) has the following properties (detection capabilities):
+      The ASPA-based path verification at ingress eBGP routers (<xref target="verif" />, <xref target="impl-verif" />) has the properties (i.e., anomaly detection capabilities) listed below. Partial deployment scenarios are considered here. 
+      In the case of properties 1 and 4, it is assumed that the attacks involve route leaks but not malicious removal of ASes with ASPA records from the AS path.
+      A helpful reference for further details concerning these properties is <xref target="sriram2"/>.  
     </t>
     <t>
       <list style="">
         <t>
-          Property 1: Let AS A and AS B be any two ASes in the Internet doing ASPA (registration and path verification) and no assumption is made about the ASPA deployment status of other ASes.
+          <strong>Property 1 (Route Leak Detection):</strong> Let AS A and AS B be any two ASes in the Internet doing ASPA (registration and path verification) and no assumption is made about the ASPA deployment status of other ASes.
           Consider a route propagated from AS A to a customer or lateral peer.
           The route is subsequently leaked by an offending AS in the AS path before being received at AS B on a customer or lateral peer interface.
           The ASPA-based path verification at AS B always detects such a route leak though it may not be able to identify the AS that originated the leak.
           This assertion is true even when the sender AS A (or receiver AS B) is an RS AS and the neighbor AS that AS A sent to (or AS B received from) is an RS-client.
-    </t>
+        </t>
+        <t>
+          <strong>Corollary of Property 1:</strong> An observation that follows from Property #1 above is that if any two ISP ASes
+          register ASPAs and implement the detection and mitigation procedures (<xref target="verif"/>, <xref target="impl-verif"/>, <xref target="mitigation"/>),
+          then any route received from one of them and leaked to the other by a common customer AS
+          (ASPA compliant or not) will be automatically detected and mitigated.
+          In effect, if most major ISPs are compliant, the propagation of route leaks in the Internet will be severely limited.
+        </t>
     <t>
-      Property 2: Again, let AS A and AS B be any two ASes in the Internet doing ASPA (registration and path verification) and no assumption is made about the ASPA deployment status of other ASes.
+      <strong>Property 2 (Detection of Forged-Origin Prefix Hijack):</strong> Again, let AS A and AS B be any two ASes in the Internet doing ASPA (registration and path verification) and no assumption is made about the ASPA deployment status of other ASes.
       Consider a route received at AS B on a customer or lateral peer interface that is a forged-origin prefix hijack involving AS A as the forged-origin.
-      The ASPA-based path verification at AS B always detects such a forged-origin prefix hijack.
+      The ASPA-based path verification at AS B always detects such a forged-origin prefix hijack. 
+      (Note: It is assumed here that the hijacker is elsewhere in the Internet and not a transit provider of AS A (see <xref target="fig4"/>, <xref target="security"/>).)
      </t>
      <t>
-       Property 3: This is an extension of Property 2 above to the case of prefix hijacking with a forged-path-segment.
+       <strong>Property 3 (Detection of Forged-Path-Segment Prefix Hijack):</strong> This is an extension of Property 2 above to the case of prefix hijacking with a forged-path-segment.
        Such hijacking refers to the forging of multiple contiguous ASes in an AS path beginning with the origin AS.
        Again, let AS A and AS B be any two ASes in the Internet doing ASPA (registration and path verification).
        Let AS A's providers, AS P and AS Q, also be registering ASPA.
@@ -639,7 +725,7 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
        Having to use a longer forged-path-segment to avoid detection by AS B diminishes the ability of the hijacked route to compete with the corresponding legitimate route in route selection.
     </t>
     <t>
-      Property 4: Let AS A, AS B, and AS C be any three ASes in the Internet doing ASPA (registration and path verification).
+      <strong>Property 4 (More about Route Leak Detection):</strong> Let AS A, AS B, and AS C be any three ASes in the Internet doing ASPA (registration and path verification).
       Consider a route propagated from AS A in any direction (i.e., to a neighbor AS with any of the BGP roles described in <xref target="role"/>).
       Let the route be received at AS B from any direction and detected to be a route leak (facilitated due to a sufficient set of ASes doing ASPA in the AS path from AS A to AS B).
       Assume that AS B's local policy is such that it only lowers the route's LOCAL_PREF <xref target="RFC4271"/>.
@@ -647,27 +733,27 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
       No assumption is made about the ASPA compliance of the ASes in the intervening path from AS B to AS C.
       The ASPA-based path verification at AS C always detects such received route as a leak regardless of the direction (type of peer) it was received from.
     </t>
+    <t>
+       <strong>Property 5 (Detection of a Form of AS_PATH Manipulation):</strong> Let AS(K) receive a route with AS_PATH {AS(K-1), AS(K-2), ..., AS(2), AS(1)}
+       (unique ASes), such that AS(i)'s ASPA includes AS(i+1), for 1 &le; i &le; K-1, but not any other AS contained in the AS_PATH.
+       If this route were forwarded by AS(K) to an eBGP neighbor with a path manipulation that consists of only removal of one or more
+       of the unique ASes from the AS_PATH, then the neighbor will always detect the received route as Invalid.
+    </t>
 <!--  Unused text - will be deleted
     <t>
-		Property 5: Consider an ASPA island (i.e., a connected set of ASPA capable ASes). If any route is leaked by an AS that is a part of an ASPA island, and ASes immediately before and after it in BGP AS_PATH are also a part of the ASPA island, then ASPA-based path verification always detects such a route leak, no matter where it is received from (though it may not be able to identify the AS that originated the leak).
-		
-		Property 5: Consider an ASPA island (i.e., a connected set of ASPA capable ASes). Let AS A and AS B be any two ASes in the ASPA island. Consider a route propagated from AS A in any direction (i.e., to a neighbor AS with any of the BGP roles described in <xref target="role"). The route is subsequently leaked by an offending AS in the AS path before being received at AS B from any direction. The ASPA-based path verification at AS B always detects such a route leak though it may not be able to identify the AS that originated the leak.
--->	
+     Property 5: Consider an ASPA island (i.e., a connected set of ASPA capable ASes). If any route is leaked by an AS that is a part of an ASPA island, and ASes immediately before and after it in BGP AS_PATH are also a part of the ASPA island, then ASPA-based path verification always detects such a route leak, no matter where it is received from (though it may not be able to identify the AS that originated the leak).
+
+     Property 5: Consider an ASPA island (i.e., a connected set of ASPA capable ASes). Let AS A and AS B be any two ASes in the ASPA island. Consider a route propagated from AS A in any direction (i.e., to a neighbor AS with any of the BGP roles described in <xref target="role"). The route is subsequently leaked by an offending AS in the AS path before being received at AS B from any direction. The ASPA-based path verification at AS B always detects such a route leak though it may not be able to identify the AS that originated the leak.
+-->
     </list>
   </t>
   <t>
       In the description of the properties listed above, the term "customer" can be replaced with "RS-client".
   </t>
   <t>
-    An observation that follows from Property #1 above is that if any two ISP ASes register ASPAs and implement the detection
-    and mitigation procedures, then any route received from one of them and leaked to the other by a common customer AS
-    (ASPA compliant or not) will be automatically detected and mitigated.
-    In effect, if most major ISPs are compliant, the propagation of route leaks in the Internet will be severely limited.
-   </t>
-  <t>	
     The above properties show that ASPA-based path verification offers significant benefits to early adopters.
     Limitations of the method with regard to some forms of malicious AS path manipulations are discussed in <xref target="security"/>.
-    </t>
+  </t>
     </section>
 
   <section title="Operational Considerations">
@@ -681,13 +767,14 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
       <t>
         ASPA issuers should be aware of the implications of ASPA-based AS path verification.
         Network operators must keep their ASPA objects correct and up to date.
-        Otherwise, for example, if a provider AS is left out of the Set of Provider ASes (SPAS) in the ASPA, then routes containing the CAS (in the ASPA) and said provider AS may be incorrectly labeled as route leaks and considered ineligible for route selection (see <xref target="ingress"/>).
+        Otherwise, for example, if a provider AS is left out of the Set of Provider ASes (SPAS) in the ASPA, then routes containing the CAS (in the ASPA) and said provider AS may be incorrectly labeled as Invalid and considered ineligible for route selection
+        (see <xref target="verif" />, <xref target="mitigation" />).
       </t>
     </section>
     <section title="Make Before Break">
       <t>
         ASPA issuers SHOULD apply the make-before-break principle while updating an ASPA registration.
-		For example, when adding new Provider AS(es) in the SPAS, if the new ASPA is meant to replace a previously created ASPA, the latter SHOULD be decommissioned only after allowing sufficient time for the new ASPA to propagate to Relying Parties (RP) through the global RPKI system.
+        For example, when adding new Provider AS(es) in the SPAS, if the new ASPA is meant to replace a previously created ASPA, the latter SHOULD be decommissioned only after allowing sufficient time for the new ASPA to propagate to Relying Parties (RP) through the global RPKI system.
       </t>
     </section>
    <section title="DoS/DDoS Mitigation Service Provider">
@@ -705,7 +792,7 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
           BGPsec <xref target="RFC8205"/> was designed to solve the problem of AS_PATH verification by including cryptographic signatures in BGP Update messages.
           It offers protection against unauthorized path modifications and assures that the BGPsec Update actually traveled the path shown in the BGPsec_PATH Attribute.
           However, it does not detect route leaks (valley-free violations).
-          In comparison, the ASPA-based path verification described in this document detects if the AS path is improbable and focuses on detecting route leaks (including malicious cases) and forged-origin hijacks.
+          In comparison, the ASPA-based path verification described in this document detects and mitigates route leaks (including malicious cases) and, to a limited extent, protects against forged-origin hijacks, forged-path-segment hijacks, and AS path modifications.
         </t>
         <t>
           BGPsec and ASPA are complementary technologies.
@@ -737,36 +824,100 @@ hop(AS(i), AS(j)) =  / Else, "Provider+" if the VAP-SPAS entry
       While the ASPA-based mechanism is able to detect and mitigate the majority of mistakes and malicious activity affecting routes, it might fail to detect some malicious path modifications, especially for routes that are received from transit providers.
     </t>
     <t>
-      Since an upstream provider becomes a trusted point, in theory, it might be able to propagate some instances of hijacked prefixes with forged-origin or forged-path-segment or even routes with manipulated AS_PATHs, and such attacks might go undetected by its customers.
-      This can be illustrated with some examples.
-      In <xref target="fig3"/>, normally the receiving/validating AS located at the lower left side should receive a route with AS_PATH {AS(5), AS(4), AS(3), AS(2), AS(1)} and it would be Valid (<xref target="Downflow"/>) given all the ASPAs that are shown in the figure.
-      However, if AS(5) which is a transit provider to the validating AS acts maliciously and sends the route with a shortened AS_PATH such as {AS(5), AS(3), AS(2), AS(1)} or {AS(5), AS(2), AS(1)}, such path manipulation would be undetectable (i.e., the AS_PATH would be considered Valid).
-      Also, if AS(5) were to perform a forged-origin hijack by inserting an AS_PATH {AS(5), AS(1)}, that would also be undetectable.
+      Since an upstream provider becomes a trusted point, in theory, it might be able to propagate some instances of hijacked prefixes with forged-origin or forged-path-segment, or even routes with manipulated AS_PATHs, and such attacks might go undetected by its customers.
+      This can be illustrated with some example scenarios.
     </t>
     <t>
-      <figure anchor="fig3" align="left" suppress-title="false" pn="figure-3">
-        <name slugifiedName="attack">Illustration for discussion of undetectable AS_PATH manipulations.</name>
-        <artwork align="left" name="" type="" alt="">
+      <strong>Example 1:</strong> A type of AS path manipulation attack is removal of some repeated AS prepend instances <xref target="RFC4271"/> to make the AS path length shorter. 
+      The ASPA method cannot detect the removal (or addition) of repeats AS numbers in the AS path. However, this attack by itself does not affect ASPA's route leak detection capability.    
+    </t>
+    <t>
+      <strong>Example 2:</strong> In the topology in <xref target="fig3"/>, the customer to provider (C2P) AS relationships are as indicated by the ASPAs listed at the bottom.
+      Relevant provider to customer (P2C) AS relationships are also shown in the figure.
+      AS(1) is originating the prefix p.
+      Normally, the receiving/verifying AS (AS(5)) should receive the route for prefix p with AS_PATH {AS(4), AS(3), AS(2), AS(1)} and it would be Valid (<xref target="Downflow"/>) given all the ASPAs that are shown.
+      But AS(4) which is a transit provider of AS(5) manipulates the AS_PATH as follows.
+      There is no physical connection or relationship between AS(4) and AS(2), but AS(4) fakes that connection and sends a route with a shortened AS_PATH {AS(4), AS(2), AS(1)}.
+      Based on the ASPA-based path verification, AS(5) cannot detect that this AS_PATH is Invalid.
+      The verification algorithm at AS(5) inherently infers that AS(4) is a customer or lateral peer of AS(2) (i.e., not a provider) because AS(4) is not included in AS(2)'s ASPA.
+      Also, if AS(4) had performed a forged-origin hijack by inserting an AS_PATH {AS(4), AS(1)}, that would also be undetectable.
+      A transit provider is in a position to manipulate AS_PATHs towards its customer in this manner and avoid detection.
+      The motivation may be to announce a shorter path to attract customer traffic away from an alternate provider.
+      In <xref target="fig3"/>, AS(5)'s alternate path to prefix p is {AS(6), AS(3), AS(2), AS(1)} which is also Valid but longer than the path received from AS(4).
+    </t>
+    <t>
+      <figure anchor="fig3" align="left" suppress-title="false" pn="figure-4">
+        <name slugifiedName="attack1">Illustration for discussion of undetectable AS_PATH manipulations.</name>
+        <artwork align="center" name="" type="" alt="">
 <![CDATA[
 
-                   AS(4) - AS(3)
-                   /         \
-   (down-ramp)    /           \    (up-ramp)
-              AS(5)          AS(2)
-                /               \
-               /               AS(1)
-              /             (Origin AS)
- Receiving & Validating AS
+                                 AS(3)
+          _____<--P2C___________/  /  \______<--C2P_______
+         /                        /                       \
+       AS(6)                     /p{AS(3), AS(2), AS(1)}   \
+         \                      /                           \
+          \                   AS(4)----faked connection----AS(2)
+           \__P2C-->__           /                             \
+                      \         / (down-ramp)         (up-ramp) \
+                       \       /                                 \
+     p{AS(6), AS(3),    \     /p{AS(4), AS(2), AS(1)}          AS(1)
+          AS(2), AS(1)}  \   /  (path manipulated)    (Origin AS) |
+                        AS(5)                                     p
+                  Receiving & verifying AS                  (prefix)
 
-ASPAs: {AS(1), [AS(2)]}, {AS(2), [AS(3)]}, {AS(5), [AS(4)]},
-       {AS(3), [AS 0]}, {AS(4), [AS 0]}
+ASPAs: {AS(1), [AS(2)]}, {AS(2), [AS(3)]}, {AS(3), [AS 0]},
+       {AS(4), AS(3)}, {AS(5), AS(4)}, {AS(6), [AS(5)]}
 ]]>
         </artwork>
       </figure>
     </t>
     <t>
-      While attacks like the examples above may happen, it does not seem to be a realistic scenario.
-      Normally a customer and their transit provider would have a signed agreement, and a policy violation (of the above kind) should have legal consequences or the customer can just drop the relationship with such a provider and remove the corresponding ASPA record.
+      In the above scenario, it may also be noted that if the attacking AS forwards the data traffic destined
+      for the affected prefix, and if all other ASes physically connected to the attacking AS are ASPA compliant,
+      then the data traffic (from the deceived customer) would flow on a feasible route-leak free path in spite of the attack.
+    </t>
+    <t>
+      <strong>Example 3:</strong> Another type of AS_PATH manipulation attack that is not detectable is illustrated in <xref target="fig4"/>.
+      In this scenario, AS(3) receives routes for prefixes p1 and p2 with different AS_PATHs that have the same origin AS.
+      Because AS(3) is listed as a provider in AS(1)'s ASPA, AS(3) is able to maliciously shorten the AS_PATH for p2 and
+      announce a route to p2 with a manipulated shorter AS_PATH {AS(3), AS(1)} to its neighbors AS(4), AS(5), and AS(6), which are customer,
+      lateral peer, and provider, respectively.
+    </t>
+        <t>
+      <figure anchor="fig4" align="left" suppress-title="false" pn="figure-5">
+        <name slugifiedName="attack2">Another type of scenario with undetectable AS_PATH manipulation.</name>
+        <artwork align="center" name="" type="" alt="">
+<![CDATA[
+                       AS(6)
+                        /\
+                         | p1{AS(3), AS(1)}
+      p1{AS(3), AS(1)}   | p2{AS(3), AS(1)}
+      p2{AS(3), AS(1)}   |
+AS(5)<----------------AS(3)
+                      / /\ /\
+                     /   |  \
+                    /    |   \ p2{AS(2), AS(1)}
+                   /     \    \
+ p1{AS(3), AS(1)} /       \   AS(2)
+ p2{AS(3), AS(1)}/         \     /\
+                /           \     |
+               /    p1{AS(1)}\    | p2{AS1}
+              /               \   |
+             \/               AS(1)
+            AS(4)          (Origin AS)
+
+AS(4), AS(5), and AS(6) are receiving & verifying ASes.
+
+ASPAs: {AS(1), [AS(2), AS(3)]}, {AS(2), [AS(3)]}, 
+{AS(3), [AS(6)]}
+]]>
+        </artwork>
+      </figure>
+    </t>
+    <t>
+      While attacks like the examples above may happen, they do not seem to be realistic scenarios.
+      Normally a customer and their transit provider would have a signed agreement, and any policy/protocol violation (of the above kind) should have legal
+      consequences or the customer can just drop the relationship with such a provider and remove the corresponding ASPA record.
     </t>
     <t>
       The key properties or strengths of the ASPA method were described in <xref target="property"/>.
@@ -801,6 +952,11 @@ ASPAs: {AS(1), [AS(2)]}, {AS(2), [AS(3)]}, {AS(5), [AS(4)]},
           It was provided by Oliver Borchert, Kyehwan Lee, and their colleagues at US NIST.
           It requires some additional work to incorporate the latest changes in the draft specifications related to IXP RS AS and RS-client.
         </li>
+        <li>
+          Implementation of ASPA-based AS path verification in the BIRD Internet Routing Daemon [BIRD] is provided in a side branch (branch mq-aspa) by Katerina Kubecova and Maria Matejka. 
+          Its release is expected after RTR v2 is finalized.
+        </li>
+
       </ul>
       </t>
     </section>
@@ -817,10 +973,10 @@ ASPAs: {AS(1), [AS(2)]}, {AS(2), [AS(3)]}, {AS(5), [AS(4)]},
       <?rfc include="reference.RFC.7606.xml"?>
       <?rfc include="reference.RFC.7908.xml"?>
       <?rfc include="reference.RFC.8174.xml"?>
-	  <?rfc include="reference.RFC.8481.xml"?>
-	  <?rfc include="reference.RFC.8893.xml"?>
+      <!-- <?rfc include="reference.RFC.8481.xml"?> -->
+      <!-- <?rfc include="reference.RFC.8893.xml"?> -->
       <?rfc include="reference.RFC.9234.xml"?>
-	  <?rfc include="reference.RFC.9324.xml"?>
+      <?rfc include="reference.RFC.9324.xml"?>
       <?rfc include="reference.I-D.ietf-sidrops-aspa-profile.xml"?>
     </references>
 
@@ -828,7 +984,7 @@ ASPAs: {AS(1), [AS(2)]}, {AS(2), [AS(3)]}, {AS(5), [AS(4)]},
       <?rfc include="reference.RFC.3779.xml"?>
       <?rfc include="reference.RFC.5280.xml"?>
       <?rfc include="reference.RFC.8205.xml"?>
-	 <!-- <?rfc include="reference.RFC.7938.xml"?> -->
+      <!-- <?rfc include="reference.RFC.7938.xml"?> -->
       <?rfc include="reference.RFC.7942.xml"?>
       <?rfc include="reference.RFC.9319.xml"?>
       <?rfc include="reference.I-D.ietf-grow-route-leak-detection-mitigation.xml"?>
@@ -869,8 +1025,17 @@ ASPAs: {AS(1), [AS(2)]}, {AS(2), [AS(3)]}, {AS(5), [AS(4)]},
         </front>
         <seriesInfo name="IETF SIDROPS Meeting," value="Proceedings of the IETF 110" />
       </reference>
+
+      <reference anchor="sriram2" target="https://storage.googleapis.com/site-media-prod/meetings/NANOG89/4809/20231017_Sriram_Aspa-Based_Bgp_As_Path_v1.pdf (slides)  https://www.youtube.com/watch?v=GdVnZGd7jMo (video)">
+        <front>
+          <title>ASPA-based BGP AS_PATH Verification and Route Leaks Solution</title>
+          <author initials="K." surname="Sriram"><organization /></author>
+          <date month="October" year="2023"/>
+        </front>
+        <seriesInfo name="NANOG-89, North American Network Operator Group Meeting," value="Slides/video archives from NANOG" />
+      </reference>
 <!--
-        <reference anchor="sriram2" target="https://datatracker.ietf.org/meeting/113/materials/slides-113-sidrops-aspa-verification-procedures-01">
+        <reference anchor="sriram3" target="https://datatracker.ietf.org/meeting/113/materials/slides-113-sidrops-aspa-verification-procedures-01">
             <front>
                 <title>ASPA Verification Procedures: Enhancements and RS Considerations</title>
                 <author initials="K." surname="Sriram"><organization /></author>
@@ -914,23 +1079,29 @@ ASPAs: {AS(1), [AS(2)]}, {AS(2), [AS(3)]}, {AS(5), [AS(4)]},
         <reference anchor="BGP-SRx" target="https://www.nist.gov/services-resources/software/bgp-secure-routing-extension-bgp-srx-software-suite">
           <front>
             <title>BGP Secure Routing Extension (BGP-SRx) Software Suite</title>
-            <author>
-              <organization>NIST</organization>
-            </author>
+            <author initials="K." surname="Lee"><organization /></author>
+            <author initials="O." surname="Borchert, et al."><organization /></author>
           </front>
           <seriesInfo name="NIST Open-Source Software" value=""  />
         </reference>
-
+        <reference anchor="BIRD" target= "https://bird.nic.cz/en/">
+          <front>
+            <title>BIRD Internet Routing Daemon; branch mq-aspa </title>
+            <author initials="K." surname="Kubecova"><organization /></author>
+            <author initials="M." surname="Matejka"><organization /></author>
+          </front>
+          <seriesInfo name="CZ.NIC BIRD Open-Source Software" value=""  />
+        </reference>
     </references>
-	
-	    <section anchor="Acknowledgments" title="Acknowledgments">
+
+    <section anchor="Acknowledgments" title="Acknowledgments">
       <t>
-        The authors wish to thank Jakob Heitz, Amir Herzberg, Igor Lubashev, Ben Maddison, Russ Housley, Jeff Haas, Nan Geng, Nick Hilliard, Shunwan Zhuang, Yangyang Wang, Martin Hoffmann, Jay Borkenhagen, Amreesh Phokeer, Aftab Siddiqui, Dai Zhibin, Doug Montgomery, Rich Compton, Andrei Robachevsky, Iljitsch van Beijnum, Matthias Waehlisch, Tassilo Tanneberger, Moritz Schulz, and Carl Seifert for comments, suggestions, and discussion on the path verification procedures or the text in the document.
-        For the implementation and testing of the procedures in the document, the authors wish to thank Claudio Jeker and Theo Buehler <xref target="bgpd"/> as well as Kyehwan Lee and Oliver Borchert <xref target="BGP-SRx"/>.
+        The authors wish to thank Jakob Heitz, Amir Herzberg, Igor Lubashev, Ben Maddison, Russ Housley, Jeff Haas, Nan Geng, Nick Hilliard, Shunwan Zhuang, Yangyang Wang, Martin Hoffmann, Jay Borkenhagen, Amreesh Phokeer, Aftab Siddiqui, Dai Zhibin, Doug Montgomery, Padma Krishnaswamy, Rich Compton, Andrei Robachevsky, Rudiger Volk, Iljitsch van Beijnum, Tassilo Tanneberger, Matthias Waehlisch, Moritz Schulz, and Carl Seifert for comments, suggestions, and discussion on the path verification procedures or the text in the document.
+        For the implementation and testing of the procedures in the document, the authors wish to thank Claudio Jeker and Theo Buehler <xref target="bgpd"/>, Kyehwan Lee and Oliver Borchert <xref target="BGP-SRx"/>, and Katerina Kubecova and Maria Matejka <xref target="BIRD"/>.
       </t>
     </section>
-	
-	<section title="Contributors" numbered="no">
+
+    <section title="Contributors" numbered="no">
       <t>
         The following people made significant contributions to this document and should be considered co-authors:
       </t>
