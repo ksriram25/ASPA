@@ -406,6 +406,9 @@ authorized(AS x, AS y) =  / Else, "Provider+" if the U-SPAS entry
               If the AS_PATH is empty, then the procedure halts with the outcome "Invalid".
             </t>
             <t>
+              If neighbor AS is not the latest AS in the AS_PATH, then the procedure halts with the outcome "Invalid".
+            </t>
+            <t>
               If the AS_PATH has an AS_SET, then the procedure halts with the outcome "Invalid".
             </t>
             <t>
