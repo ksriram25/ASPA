@@ -175,7 +175,7 @@
       <t>
         For path verification purposes in this document, the peering relationships an AS can have in relation to a neighbor AS are Customer, Provider, Peer, Route Server (RS), RS-client, and Complex.
         These peering relationships are defined in <xref target="RFC9234"/>.
-        A special case of Complex relation is mutual-transit when ASes MAY export everything (both customer and non-customer routes) to each other, i.e., customer-to-provider relationship applies in each direction.
+        A special case of the Complex relation is mutual-transit when ASes MAY export everything (both customer and non-customer routes) to each other, i.e., customer-to-provider relationship applies in each direction.
         All peering relationships are defined locally.
       </t>
     </section>
@@ -189,8 +189,8 @@
         The notation (AS x, {AS y1, AS y2, ...}), is used to represent an ASPA object for a CAS denoted as AS x <xref target="I-D.ietf-sidrops-aspa-notation"/>.
         In this notation, the comma-separated set {AS y1, AS y2, ...} represents the Set of Provider ASes (SPAS) of the CAS (AS x).
         A CAS is expected to register a single ASPA listing all its Provider ASes (see <xref target="rec1"/>).
-        If a CAS has a single ASPA, then the Union SPAS (U-SPAS) for the CAS equals to SPAS.
-        In case a CAS has multiple ASPAs, then the U-SPAS for the CAS is the union of AS listed in all SPAS of these ASPAs.
+        If a CAS has a single cryptographically valid ASPA, then the Union SPAS (U-SPAS) for the CAS equals to SPAS.
+        In case a CAS has multiple cryptographically valid ASPAs, then the U-SPAS for the CAS is the union of AS listed in all SPAS of these ASPAs.
       </t>
     </section>
 
@@ -198,8 +198,8 @@
       <t>
         A compliant AS or Route Server AS (RS AS) MUST have an ASPA.
         An AS SHOULD NOT have more than one ASPA.
-        An AS MUST list in SPAS the union of all its Provider AS(es) and non-transparent RS AS(es) at which it is an RS-client.
-        An AS MUST include Provider AS in SPAS even if provides only IPv4 or only IPv6 connectivity service.
+        An AS MUST list in its SPAS the union of all its Provider AS(es) and non-transparent RS AS(es) at which it is an RS-client.
+        An AS MUST include a Provider AS in its SPAS regardless of whether it provides connectivity for only IPv4 or only IPv6 or both.
       </t>
       <t>
         An ASPA object showing only AS 0 as a provider AS is referred to as an AS0 ASPA.
@@ -213,7 +213,7 @@
         The software that provides hosting for ASPA records SHOULD support enforcement of this practice.
       </t>
       <t>
-        An AS may have providers that may be used in certain occasions, for an example in case of DDoS attack.
+        An AS may have providers that may be used on certain occasions, for an example in case of a DDoS attack.
         It is RECOMMENDED to add such providers in ASPA in advance, so there will be no race conditions between ASPA distribution and route propagation.
       </t>
       <t>
@@ -240,7 +240,7 @@
       </t>
       <t>
         <figure anchor="fig1" align="left" suppress-title="true" pn="figure-1">
-          <name slugifiedName="HFC-illustration">provider authorization function.</name>
+          <name slugifiedName="HFC-illustration">Provider authorization function.</name>
           <artwork align="left" name="" type="" alt="">
 <![CDATA[
 
@@ -320,54 +320,50 @@ authorized(AS x, AS y) =  / Else, "Provider+" if the U-SPAS entry
           The AS_PATH may in general have both an up-ramp (on the right starting at AS(1)) and a down-ramp (on the left starting at AS(N)).
           The up-ramp starts at AS(1) and each hop AS(i) to AS(i+1) represents Customer and Provider peering relationship.
           The down-ramp runs backward from AS(N) to AS(L).
-          Each pair AS(j) to AS(j-1) represents Customer and Provider peering relationship.
-          If there are no hops or just one hop between the apexes of the up-ramp and the down-ramp, then the AS_PATH is Valid (valley free) and the route is Valid per ASPA verification.
+          In the down-ramp, each pair AS(j) to AS(j-1) represents Customer and Provider peering relationship.
+          If there are no hops or just one hop between the apexes of the up-ramp and the down-ramp, then the AS_PATH is valid (valley free).
         </t>
         <t>
-          <strong>Determination of Invalid AS_PATH:</strong>
+          If the sum of lengths of up-ramp and down-ramp is less than N, it is invalid: the prefix was leaked or AS_PATH was malformed.
         </t>
         <t>
-          If the sum of lengths of up-ramp and down-ramp is less than N, it is Invalid.
-        </t>
-
-        <t>
-          ASPA can be used to check if ASy attested provider of AS x, and thus provider authorization function can be used measure up-ramp and down-ramp lengths.
-          The 'Not Provider' outcome of provider authorization function can be used to calculate upper boundary of ramp length and the 'No Attestation' outcome can be used to calculate its low boundary.
+          ASPA can be used to check if AS y is an attested provider of AS x, and thus the provider authorization function can be used to measure the bounds on up-ramp and down-ramp lengths.
+          The "Not Provider+" outcome of the provider authorization function can be used to calculate the upper boundary of ramp length and the 'No Attestation' outcome can be used to calculate its lower boundary.
           Below are the formal definitions.
         </t>
 
         <t>
-          We define maximum up-ramp length as I, where I is the minimum index for which authorized(A(I), A(I+1)) returns 'Not Provider'.
-          If there is no such I, the maximum is equal to AS_PATH length, or N. We define this parameter as max_up_ramp.
-          The minimum up-ramp length can be defined as I, where I is minimum index for which authorized(A(I), A(I+1)) returns "No Attestation" or "Not Provider".
-          If there is no such I, the AS_APATH consists only of "Provider+" pairs only, so the minimum up-ramp length equals to AS_PATH length, or N.
-          We define this parameter as min_up_ramp.
+          Determine the maximum up-ramp length as I, where I is the minimum index for which authorized(A(I), A(I+1)) returns "Not Provider+".
+          If there is no such I, the maximum up-ramp length is set equal to the AS_PATH length N. This parameter is defined as max_up_ramp.
+          The minimum up-ramp length can be determined as I, where I is the minimum index for which authorized(A(I), A(I+1)) returns "No Attestation" or "Not Provider+".
+          If there is no such I, the AS_PATH consists of only "Provider+" pairs; so the minimum up-ramp length is set equal to the AS_PATH length N.
+          This parameter is defined as min_up_ramp.
         </t>
         <t>
-          Similar the maximum down-ramp length can be defined as N - J + 1 where J is maximum index for which authorized(A(J), A(J-1)) returns "Not Provider".
-          If there is no such J, the maximum is equal to AS_PATH length, or N.
-          We define this parameter as max_down_ramp.
-          The minimum down-ramp length can be defined as N - J + 1 where J is maximum index for which authorized(A(J), A(J-1)) returns "No Attestation" or "Not Provider". If there is no such J, the minimum equals to AS_PATH length, or N.
-          We define this parameter as min_down_ramp.
-        </t>
-
-        <t>
-          If sum of maximum estimations of up-ramp and down-ramp is less than N, the path is Invalid.
-          If sum of minimum estimations of up-ramp and down-ramp is less than N, we don't have enough information to make full verification, the outcome is Unknown.
-          Otherwise, it is Valid.
+          Similarly, the maximum down-ramp length can be determined as N - J + 1 where J is the maximum index for which authorized(A(J), A(J-1)) returns "Not Provider+".
+          If there is no such J, the maximum down-ramp length is set equal to the AS_PATH length N.
+          This parameter is defined as max_down_ramp.
+          The minimum down-ramp length can be determined as N - J + 1 where J is the maximum index for which authorized(A(J), A(J-1)) returns "No Attestation" or "Not Provider+". If there is no such J, the minimum down-ramp length is set equal to the AS_PATH length N.
+          This parameter is defined as min_down_ramp.
         </t>
 
         <t>
-          Below are formal procedures for path verification depending on the role between receiving AS and its neighbour.
-          These procedures are using compressed sequence representation of AS_PATH {AS(N), AS(N-1),..., AS(2), AS(1)} and defined above parameters max_up_ramp, min_up_ramp, max_down_ramp and min_up_ramp
+          If the sum of max_up_ram and max_down_ramp is less than N, the AS path is Invalid.
+          Else, if the sum of min_up_ram and min_down_ramp is less than N, enough information is not available to perform full AS path verification, and the outcome is set to Unknown.
+          Else, the AS path is Valid.
+        </t>
+
+        <t>
+          Below are formal procedures for path verification depending on the peering relationship between the receiving AS and its neighbour.
+          These procedures use the compressed sequence representation of AS_PATH {AS(N), AS(N-1),..., AS(2), AS(1)} and the above-defined parameters max_up_ramp, min_up_ramp, max_down_ramp, and min_up_ramp
         </t>
       </section>
 
       <section title="Algorithm for Upstream Paths" anchor="Upflow">
         <t>
           The upstream verification algorithm described here is applied when a route is received from a Customer or Peer, or is received by an RS from an RS-client, or is received by an RS-client from an RS.
-          In all these cases, the receiving/validating eBGP router expects the AS_PATH does not have a down-ramp, only up-ramp.
-          Thus max_down_ramp and min_down_ramp are set to 0.
+          In all these cases, the receiving/validating eBGP router expects the AS_PATH to have only an up-ramp (no down-ramp) for it to be Valid.
+          Therefore, max_down_ramp and min_down_ramp are set to 0.
         </t>
         <t>
           The upstream path verification procedure is specified as follows:
@@ -378,16 +374,16 @@ authorized(AS x, AS y) =  / Else, "Provider+" if the U-SPAS entry
               If the AS_PATH is empty, then the procedure halts with the outcome "Invalid".
             </t>
             <t>
-              If receiving AS is not RS-client and neighbor AS is not the latest AS in the AS_PATH, then the procedure halts with the outcome "Invalid".
+              If the receiving AS is not an RS-client and the most recently added AS in the AS_PATH does not match the neighbor AS, then the procedure halts with the outcome "Invalid".
             </t>
             <t>
               If the AS_PATH has an AS_SET, then the procedure halts with the outcome "Invalid".
             </t>
             <t>
-              If max_up_ramp &lt; N the procedure halts with the outcome "Invalid".
+              If max_up_ramp &lt; N, the procedure halts with the outcome "Invalid".
             </t>
             <t>
-              If min_up_ramp &lt; N the procedure halts with the outcome "Unknown".
+              If min_up_ramp &lt; N, the procedure halts with the outcome "Unknown".
             </t>
             <t>
               Else, the procedure halts with the outcome "Valid".
@@ -406,16 +402,16 @@ authorized(AS x, AS y) =  / Else, "Provider+" if the U-SPAS entry
               If the AS_PATH is empty, then the procedure halts with the outcome "Invalid".
             </t>
             <t>
-              If neighbor AS is not the latest AS in the AS_PATH, then the procedure halts with the outcome "Invalid".
+              If the most recently added AS in the AS_PATH does not match the neighbor AS, then the procedure halts with the outcome "Invalid".
             </t>
             <t>
               If the AS_PATH has an AS_SET, then the procedure halts with the outcome "Invalid".
             </t>
             <t>
-              If max_up_ramp + max_down_ramp &lt; N the procedure halts with the outcome "Invalid".
+              If max_up_ramp + max_down_ramp &lt; N, the procedure halts with the outcome "Invalid".
             </t>
             <t>
-              If min_up_ramp + min_down_ramp &lt; N the procedure halts with the outcome "Unknown".
+              If min_up_ramp + min_down_ramp &lt; N, the procedure halts with the outcome "Unknown".
             </t>
             <t>
               Else, the procedure halts with the outcome "Valid".
@@ -459,9 +455,9 @@ authorized(AS x, AS y) =  / Else, "Provider+" if the U-SPAS entry
 
       <section title="BGP Roles" anchor="role">
         <t>
-          The BGP Role configuration parameter and its cross-check in BGP OPEN message are specified in <xref target="RFC9234"/> are RECOMMENDED.
-          The configured BGP Roles SHOULD be used to automate the use of described above verification procedures helping to distinguish whether upstream or downstream procedures should be applied.
-          The automatic peering role cross-check should facilitate more accurate and effective deployment of ASPA.
+          The BGP Role configuration parameter and its cross-check in BGP OPEN message as specified in <xref target="RFC9234"/> are RECOMMENDED.
+          The configured BGP Roles SHOULD be used to automate the use of the above-described AS path verification procedures helping to distinguish whether upstream or downstream procedures should be applied.
+          The automatic BGP Role cross-check <xref target="RFC9234"/> should facilitate more accurate and effective deployment of ASPA. 
         </t>
       </section>
 
@@ -470,8 +466,8 @@ authorized(AS x, AS y) =  / Else, "Provider+" if the U-SPAS entry
           If multiple eBGP sessions can segregate the Complex peering relationship into eBGP sessions with normal peering relationships the receiving/verifying AS SHOULD select the algorithm (per <xref target="Upflow"/> or <xref target="Downflow"/>) for each of the normal sessions based on its peering relation type.
         </t>
         <t>
-          If complex peering relation can't be segregated (i.e., when a complex BGP relationship occurs within one single BGP session), an operator may want to achieve an equivalent outcome by configuring policies on a per-prefix basis to follow the definitions of peering relations.
-          If this option is not applicable operator MAY apply <xref target="Downflow"/>.
+          If Complex peering relation can't be segregated (i.e., when a Complex BGP relationship occurs within one single BGP session), an operator may want to achieve an equivalent outcome by configuring policies on a per-prefix basis corresponding to the peering relation for the prefix.
+          If this option is not feasible, the operator MAY apply <xref target="Downflow"/>.
         </t>
       </section>
 
@@ -480,6 +476,44 @@ authorized(AS x, AS y) =  / Else, "Provider+" if the U-SPAS entry
           For any route with an Invalid AS_PATH, the cause of the Invalid state SHOULD be logged for monitoring and diagnostic purposes.
           The cause of the Invalid state can be recorded in the form of listing the AS hops which were evaluated by the provider authorization function to be &quot;Not Provider+&quot;.
           The logging router, however, cannot necessarily determine the AS that caused the route leak.
+        </t>
+      </section>
+    </section>
+
+    <section anchor="security" title="Security Considerations">
+      <section title="Difference in IPv4 and IPv6 Connectivity">
+        <t>
+          The U-SPAS is supposed to contain the union of Providers for a CAS for both IPv4 and IPv6 connectivity.
+          This design solution may have side effects if a customer-to-provider relationship exists only in one address family, resulting in a relaxed AS_PATH verification in the other one.
+        </t>
+        <t>
+          The authors of this document believe that this is a reasonable compromise, as it will simplify both the ASPA registration process and the verification process.
+          There is also an expectation that the difference between IPv4 and IPv6 topologies will reduce as the volume of IPv6 traffic grows.
+        </t>
+      </section>
+
+      <section title="Provider as Trusted Point">
+        <t>
+          Since an upstream provider becomes a trusted point, in theory, it might be able to propagate some instances of hijacked prefixes with forged-origin or forged-path-segment or even routes with manipulated AS_PATHs, and such attacks might go undetected by its customers or upper providers.
+        </t>
+        <t>
+          While such attacks may happen, it does not seem to be a realistic scenario.
+          Normally a customer and their transit provider would have a signed agreement, and a policy violation (of the above kind) should have legal consequences or the customer can just drop the relationship with such a provider and remove the corresponding ASPA record.
+        </t>
+      </section>
+
+      <section anchor="prepend" title="Manipulating AS_PATH Prepends">
+        <t>
+          The ASPA verification procedures cannot detect the removal (or addition) of repeats of AS numbers in the AS path.
+          However, this attack by itself does not affect ASPA's route leak detection capability.
+        </t>
+      </section>
+
+      <section title="Correctness of the ASPA">
+        <t>
+          ASPA issuers should be aware of the implications of ASPA-based AS path verification.
+          Network operators must keep their ASPA objects correct and up to date.
+          Otherwise, for example, if a provider AS is left out of the SPAS, then routes containing the CAS (in the ASPA) and said provider AS may be incorrectly labeled as Invalid and considered ineligible for route selection (see <xref target="verif" />, <xref target="mitigation" />).
         </t>
       </section>
     </section>
@@ -510,43 +544,12 @@ authorized(AS x, AS y) =  / Else, "Provider+" if the U-SPAS entry
       <section title="Only to Customer (OTC) Attribute" anchor="otc">
         <t>
           While the ASPA-based AS_PATH verification method (<xref target="verif"/>, <xref target="mitigation"/>) detects and mitigates route leaks that were created by preceding ASes listed in the AS_PATH, it lacks the ability to prevent the local AS from initiating a route leak towards its neighbor.
-          ASPA verification may also fail to detect route leaks in case of presence of Complex relations in the AS_APTH.
+          ASPA verification may also fail to detect route leaks in case of presence of Complex relations in the AS_PATH.
           The use of the Only to Customer (OTC) Attribute fills in that gap (see Section 5, <xref target="RFC9234"/>).
           The implementation of the procedures utilizing the OTC Attribute is RECOMMENDED to complement the ASPA-based AS_PATH verification.
         </t>
       </section>
     </section>
-
-  <section anchor="security" title="Security Considerations">
-    <section title="Difference in IPv4 and IPv6 connectivity">
-      <t>
-        The U-SPAS is supposed to contain a union of Providers for a CAS for both IPv4 and IPv6 connectivity.
-        This design solution may have side effects if a customer-to-provider relationship exists only in one address family, resulting in a relaxed AS_PATH verification in the other one.
-      </t>
-      <t>
-        The authors of this document believe that this is a reasonable compromise, as it will simplify both the ASPA registration process and the verification process.
-        There is also an expectation that the difference between IPv4 and IPv6 topologies will reduce as the volume of IPv6 traffic grows.
-      </t>
-    </section>
-
-    <section title="Provider as Trusted Point">
-      <t>
-        Since an upstream provider becomes a trusted point, in theory, it might be able to propagate some instances of hijacked prefixes with forged-origin or forged-path-segment or even routes with manipulated AS_PATHs, and such attacks might go undetected by its customers.
-      </t>
-      <t>
-        While such attacks like may happen, it does not seem to be a realistic scenario.
-        Normally a customer and their transit provider would have a signed agreement, and a policy violation (of the above kind) should have legal consequences or the customer can just drop the relationship with such a provider and remove the corresponding ASPA record.
-      </t>
-    </section>
-
-    <section title="Correctness of the ASPA">
-      <t>
-        ASPA issuers should be aware of the implications of ASPA-based AS path verification.
-        Network operators must keep their ASPA objects correct and up to date.
-        Otherwise, for example, if a provider AS is left out of the SPAS, then routes containing the CAS (in the ASPA) and said provider AS may be incorrectly labeled as Invalid and considered ineligible for route selection (see <xref target="verif" />, <xref target="mitigation" />).
-      </t>
-    </section>
-  </section>
 
   <section anchor="IANA" title="IANA Considerations">
     <t>
@@ -705,59 +708,45 @@ authorized(AS x, AS y) =  / Else, "Provider+" if the U-SPAS entry
       </t>
     </section>
 
-    <section title="ASPA Use Cases" anchor="property">
+    <section title="Properties and Early Adoption Benefits" anchor="property">
       <t>
-        This section covers properties of ASPA that should support it incremental deployment and improve routing security for early adopters.
-      </t>
-      <t>
-        The ASPA-based path verification at ingress eBGP routers (<xref target="verif" />) has the following properties (detection capabilities):
+        The ASPA method has the properties (i.e., anomaly detection capabilities) listed below.
+        Partial deployment scenarios and early adoption benefits are considered.
+        In the case of Property 1, it is assumed that the attacks involve route leaks but not malicious removal of ASes with ASPA records from the AS path.
       </t>
       <t>
         <list style="">
           <t>
-            Property 1: Let AS A and AS B be any two ASes in the Internet doing ASPA (registration and path verification) and no assumption is made about the ASPA deployment status of other ASes.
+            <strong>Property 1 (Route Leak Detection):</strong> Let AS A and AS B be any two ASes in the Internet doing ASPA (registration and path verification) and no assumption is made about the ASPA deployment status of other ASes.
             Consider a route propagated from AS A to a customer or lateral peer.
             The route is subsequently leaked by an offending AS in the AS path before being received at AS B on a customer or lateral peer interface.
-            The ASPA-based path verification at AS B always detects such a route leak though it may not be able to identify the AS that originated the leak.
-            This assertion is true even when the sender AS A (or receiver AS B) is an RS AS and the neighbor AS that AS A sent to (or AS B received from) is an RS-client.
+            The ASPA-based path verification at AS B always detects such a route leak though it may not be able to identify the AS that caused the leak.
           </t>
           <t>
-            Property 2: Again, let AS A and AS B be any two ASes in the Internet doing ASPA (registration and path verification) and no assumption is made about the ASPA deployment status of other ASes.
+            <strong>Corollary of Property 1:</strong> An observation that follows from Property #1 above is that if any two ISP ASes register ASPAs and implement the detection and mitigation procedures, then any route received from one of them and leaked to the other by an AS in their overlapping customer cones (ASPA compliant or not) will be automatically detected and mitigated.
+            In effect, if most major ISPs are compliant, the propagation of route leaks in the Internet will be severely limited.
+          </t>
+          <t>
+            <strong>Property 2 (Detection of Forged-Origin Prefix Hijack):</strong> Again, let AS A and AS B be any two ASes in the Internet doing ASPA (registration and path verification) and no assumption is made about the ASPA deployment status of other ASes.
             Consider a route received at AS B on a customer or lateral peer interface that is a forged-origin prefix hijack involving AS A as the forged-origin.
+            Assume that the offending AS X is not included in the ASPA of AS A.
             The ASPA-based path verification at AS B always detects such a forged-origin prefix hijack.
           </t>
           <t>
-           Property 3: This is an extension of Property 2 above to the case of prefix hijacking with a forged-path-segment.
-           Such hijacking refers to the forging of multiple contiguous ASes in an AS path beginning with the origin AS.
-           Again, let AS A and AS B be any two ASes in the Internet doing ASPA (registration and path verification).
-           Let AS A's providers, AS P and AS Q, also be registering ASPA.
-           No assumption is made about the ASPA deployment status of any other ASes in the Internet.
-           Consider a route received at AS B on a customer or lateral peer interface that is a prefix hijack with a forged-path-segment {AS P, AS A} or {AS Q, AS A}.
-           That is, the hijacker attaches this path-segment at the beginning of their route announcement.
-           The ASPA-based path verification at AS B always detects such a forged-path-segment prefix hijack.
-           For a chance to be successful (remain undetected by AS B), the hijacker may resort to a forged-path-segment with three ASes including a provider AS of AS P (or AS Q).
-           But even that can be foiled (detected) if the providers of AS P and AS Q also register ASPA.
-           Having to use a longer forged-path-segment to avoid detection by AS B diminishes the ability of the hijacked route to compete with the corresponding legitimate route in route selection.
-          </t>
-          <t>
-            Property 4: Let AS A, AS B, and AS C be any three ASes in the Internet doing ASPA (registration and path verification).
-            Consider a route propagated from AS A in any direction (i.e., to a neighbor AS with any of the BGP roles described in <xref target="terminology"/>).
-            Let the route be received at AS B from any direction and detected to be a route leak (facilitated due to a sufficient set of ASes doing ASPA in the AS path from AS A to AS B).
-            Assume that AS B's local policy is such that it only lowers the route's LOCAL_PREF <xref target="RFC4271"/>.
-            Let such a route, selected and forwarded by AS B, be subsequently received at AS C.
-            No assumption is made about the ASPA compliance of the ASes in the intervening path from AS B to AS C.
-            The ASPA-based path verification at AS C always detects such received route as a leak regardless of the direction (type of peer) it was received from.
+             <strong>Property 3 (Detection of Forged-Path-Segment Prefix Hijack):</strong> This is an extension of Property 2 above to the case of prefix hijacking with a forged-path-segment.
+             Such hijacking refers to the forging of multiple contiguous ASes in an AS path beginning with the origin AS.
+             Again, let AS A and AS B be any two ASes in the Internet doing ASPA (registration and path verification).
+             Assume that AS A's providers, AS P and AS Q, also register ASPA.
+             No assumption is made about the ASPA deployment status of any other ASes in the Internet.
+             Consider a route received at AS B on a customer or lateral peer interface that is a prefix hijack with a forged-path-segment {AS P, AS A} or {AS Q, AS A}.
+             That is, the offending AS X attaches this path-segment at the beginning of its (AS X's) route announcement.
+             Assume that AS X is not included in the ASPA of AS P or AS Q.
+             The ASPA-based path verification at AS B always detects such a forged-path-segment prefix hijack.
+             For a chance to be successful (remain undetected by AS B), the hijacker may resort to a forged-path-segment with three ASes including a provider AS of AS P (or AS Q).
+             But even that can be foiled (detected) if the providers of AS P and AS Q also register ASPA.
+             The forged-path-segment hijack in consideration is entirely prevented (for any forged-path-segment length) if all ASes in the contiguous C2P hops from AS A up to its Tier 1 have ASPA registrations.
           </t>
         </list>
-      </t>
-      <t>
-        In the description of the properties listed above, the term "customer" can be replaced with "RS-client".
-      </t>
-      <t>
-        An observation that follows from Property #1 above is that if any two ISP ASes register ASPAs and implement the detection
-        and mitigation procedures, then any route received from one of them and leaked to the other by a common customer AS
-        (ASPA compliant or not) will be automatically detected and mitigated.
-        In effect, if most major ISPs are compliant, the propagation of route leaks in the Internet will be severely limited.
       </t>
       <t>
         The above properties show that ASPA-based path verification offers significant benefits to early adopters.
@@ -766,5 +755,4 @@ authorized(AS x, AS y) =  / Else, "Provider+" if the U-SPAS entry
     </section>
   </back>
 </rfc>
-
 
