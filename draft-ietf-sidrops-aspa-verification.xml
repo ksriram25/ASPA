@@ -481,14 +481,15 @@ authorized(AS x, AS y) =  / Else, "Provider+" if the U-SPAS entry
     </section>
 
     <section anchor="security" title="Security Considerations">
-      <section title="Difference in IPv4 and IPv6 Connectivity">
+      <section title="Incongruence in IPv4 and IPv6 Connectivity">
         <t>
-          The U-SPAS is supposed to contain the union of Providers for a CAS for both IPv4 and IPv6 connectivity.
-          This design solution may have side effects if a customer-to-provider relationship exists only in one address family, resulting in a relaxed AS_PATH verification in the other one.
+          The U-SPAS contain the union of Providers for a CAS for both IPv4 and IPv6 unicast connectivity.
+          This design choice consequently means that if a customer-provider relationship exists only in one address family, and no relationship or a lateral peering relationship exists in the other one address family, AS_PATH verification outcomes in the latter AFI will be as permissive as verification outcomes in the former AFI.
+          The is believed to be a reasonable compromise as both the ASPA registration and verification processes are simplified, and no false positive outcomes are yielded (e.g. inadvertent Invalid evaluation).
         </t>
         <t>
-          The authors of this document believe that this is a reasonable compromise, as it will simplify both the ASPA registration process and the verification process.
-          There is also an expectation that the difference between IPv4 and IPv6 topologies will reduce as the volume of IPv6 traffic grows.
+          Note: variances in routing policies are not limited to discrepancies just between address families, for example: some providers simultaneously maintain lateral peering relationships alongside customer relationships with a given autonomous system  - in doing so using policy specific to particular EBGP sessions, or use routing policies specific to individual IP prefixes learned via specific EBGP sessions.
+          Extending or building upon the specification described in this document to accommodate signaling desired policy via the RPKI with IP prefix-specific granularity, EBGP session-specific granularity, or address family granularity are possible areas for future work.
         </t>
       </section>
 
