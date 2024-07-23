@@ -484,12 +484,8 @@ authorized(AS x, AS y) =  / Else, "Provider+" if the U-SPAS entry
       <section title="Incongruence in IPv4 and IPv6 Connectivity">
         <t>
           The U-SPAS contain the union of Providers for a CAS for both IPv4 and IPv6 unicast connectivity.
-          This design choice consequently means that if a customer-provider relationship exists only in one address family, and no relationship or a lateral peering relationship exists in the other one address family, AS_PATH verification outcomes in the latter AFI will be as permissive as verification outcomes in the former AFI.
-          The is believed to be a reasonable compromise as both the ASPA registration and verification processes are simplified, and no false positive outcomes are yielded (e.g. inadvertent Invalid evaluation).
-        </t>
-        <t>
-          Note: variances in routing policies are not limited to discrepancies just between address families, for example: some providers simultaneously maintain lateral peering relationships alongside customer relationships with a given autonomous system  - in doing so using policy specific to particular EBGP sessions, or use routing policies specific to individual IP prefixes learned via specific EBGP sessions.
-          Extending or building upon the specification described in this document to accommodate signaling desired policy via the RPKI with IP prefix-specific granularity, EBGP session-specific granularity, or address family granularity are possible areas for future work.
+          This design choice consequently means that if a customer-provider relationship exists for one address family but doesn't exist for the other address family, AS_PATH verification outcomes for the latter AFI will be as permissive as verification outcomes for the former AFI.
+          That is believed to be a reasonable compromise as both the ASPA registration and verification processes are simplified, and no false positive outcomes are yielded (e.g. inadvertent Invalid evaluation).
         </t>
       </section>
 
