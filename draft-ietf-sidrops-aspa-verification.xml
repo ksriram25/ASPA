@@ -400,7 +400,7 @@ authorized(AS x, AS y) =  / Else, "Provider+" if the U-SPAS entry
 
       <section title="Algorithm for Downstream Paths" anchor="Downflow">
         <t>
-          The downstream verification algorithm described here is applied when a route is received from a Provider. Here a transit provider, RS, and mutual-transit neighbor are all effectively instances of "Provider". 
+          The downstream verification algorithm described here is applied when a route is received from a Provider. Here a transit provider and mutual-transit neighbor are effectively instances of "Provider". 
         </t>
         <t>
           <list style="numbers">
