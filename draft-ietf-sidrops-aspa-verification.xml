@@ -340,17 +340,18 @@ authorized(AS x, AS y) =  / Else, "Provider+" if the U-SPAS entry
 
         <t>
           Determine the maximum up-ramp length as I, where I is the minimum index for which authorized(A(I), A(I+1)) returns "Not Provider+".
-          If there is no such I, the maximum up-ramp length is set equal to the AS_PATH length N. This parameter (maximum up-ramp length) is denoted by max_up_ramp.
+          If there is no such I, the maximum up-ramp length is set equal to the AS_PATH length N.
+          The maximum up-ramp length is abbreviated as max_up_ramp.
           The minimum up-ramp length can be determined as I, where I is the minimum index for which authorized(A(I), A(I+1)) returns "No Attestation" or "Not Provider+".
           If there is no such I, the AS_PATH consists of only "Provider+" pairs; so the minimum up-ramp length is set equal to the AS_PATH length N.
-          This parameter (minimum up-ramp length) is denoted by min_up_ramp.
+          The minimum up-ramp length is abbreviated as min_up_ramp.
         </t>
         <t>
           Similarly, the maximum down-ramp length can be determined as N - J + 1 where J is the maximum index for which authorized(A(J), A(J-1)) returns "Not Provider+".
           If there is no such J, the maximum down-ramp length is set equal to the AS_PATH length N.
-          This parameter (maximum down-ramp length) is denoted by max_down_ramp.
+          The maximum down-ramp length is abbreviated as max_down_ramp.
           The minimum down-ramp length can be determined as N - J + 1 where J is the maximum index for which authorized(A(J), A(J-1)) returns "No Attestation" or "Not Provider+". If there is no such J, the minimum down-ramp length is set equal to the AS_PATH length N.
-          This parameter (minimum down-ramp length) is denoted by min_down_ramp.
+          The minimum down-ramp length is abbreviated as min_down_ramp.
         </t>
 
         <t>
