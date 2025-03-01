@@ -737,7 +737,7 @@ authorized(AS x, AS y) =   / Else, "Provider+" if the U-SPAS entry
           </front>
           <seriesInfo name="CZ.NIC BIRD Open-Source Software" value=""  />
         </reference>
-        <reference anchor="FreeRTR" target= "https://www.freertr.org/">
+        <reference anchor="FreeRTR" target= "http://www.freertr.org/">
           <front>
             <title>FreeRTR </title>
             <author initials="C." surname="Mate"><organization /></author>
