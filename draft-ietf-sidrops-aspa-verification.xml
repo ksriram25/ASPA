@@ -229,7 +229,7 @@
           AS(N+1) represents the local (receiving/verifying) AS; it does not explicitly appear in the description of the AS_PATH verification procedures.
         </t>
         <t>
-          <figure anchor="fig2" align="left" suppress-title="false" pn="figure-2">
+          <figure anchor="fig2" align="left" suppress-title="false" pn="figure-1">
             <name slugifiedName="ramp-illustration">Illustration of up-ramp and down-ramp. </name>
             <artwork align="left" name="" type="" alt="">
       <![CDATA[
@@ -289,7 +289,7 @@
           This function is specified as follows:
         </t>
         <t>
-          <figure anchor="fig1" align="left" suppress-title="true" pn="figure-1">
+          <figure anchor="fig1" align="left" suppress-title="true" pn="figure-2">
             <name slugifiedName="HFC-illustration">Provider authorization function.</name>
             <artwork align="left" name="" type="" alt="">
   <![CDATA[
