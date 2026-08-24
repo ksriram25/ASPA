@@ -209,7 +209,7 @@
         An AS may maintain standby providers for specific operational scenarios. 
         For example, an AS might temporarily route traffic through a DDoS mitigation provider. 
         Another use case involves bridging isolated segments, where an AS might use an emergency provider to receive routes with its own ASN in the AS_PATH. 
-        It is RECOMMENDED to add such standby or emergency providers in ASPA object in advance to prevent race conditions between global ASPA distribution and route propagation.
+        It is RECOMMENDED to add such standby or emergency providers in the ASPA object in advance to prevent race conditions between global ASPA distribution and route propagation.
       </t>
       <t>
         During a transition process between different certification authority (CA) registries, the ASPA records SHOULD be kept identical in all relevant registries.
@@ -223,7 +223,22 @@
         So, the term AS_PATH is used in this document to refer to the usual AS_PATH <xref target="RFC4271"/> as well as the reconstructed AS_PATH.
       </t>
 
-      <section title="Principles" anchor="principles">
+      <section title="Prerequisite AS_PATH Checks" anchor="aspath-syntax">
+        <t>
+          <xref target="RFC9774"/> specifies that "treat-as-withdraw" error handling <xref target="RFC7606"/> MUST be applied to any route containing an AS_SET in the AS_PATH.
+        </t>
+        <t>
+          If an attacker intentionally creates a route leak, they may attempt to strip their AS from the AS_PATH.
+          To mitigate this, a check is necessary to match the most recently added AS in the AS_PATH to the BGP neighbor's ASN, with a standard exception for routes received from a transparent Internet Exchange (IX) route server.
+          This AS_PATH check is specified in Section 6.3 of <xref target="RFC4271"/> and its handling is updated in <xref target="RFC7606"/>.
+        </t>
+        <t>
+          If the aforementioned AS_PATH checks and error handling are implemented, they MUST be applied prior to ASPA verification.
+          If a BGP speaker applies ASPA procedures to an AS_PATH without first enforcing these checks, any route that fails either condition (i.e., it contains an AS_SET or has a mismatched neighbor ASN) is evaluated as Invalid by the ASPA verification procedures (<xref target="Upflow"/> and <xref target="Downflow"/>).
+        </t>
+      </section>
+
+      <section title="Principles of ASPA Verification" anchor="principles">
         <t>
           Let the sequence COMPRESSED_AS_PATH {AS(N), AS(N-1),..., AS(2), AS(1)} represent the AS_PATH after removing consecutive duplicate ASNs, where AS(1) is the origin AS, and AS(N) is the most recently added neighbor AS of the receiving/verifying AS.
           AS(N+1) represents the local (receiving/verifying) AS; it does not explicitly appear in the description of the AS_PATH verification procedures.
@@ -342,21 +357,6 @@ authorized(AS x, AS y) =   / Else, "Provider+" if the U-SPAS entry
         <t>
           Below are formal procedures for path verification depending on the peering relationship between the receiving AS and its neighbor.
           These procedures use the COMPRESSED_AS_PATH and the above-defined parameters max_up_ramp, min_up_ramp, max_down_ramp, and min_down_ramp.
-        </t>
-      </section>
-
-      <section title="AS_PATH Syntax Correctness" anchor="aspath-syntax">
-        <t>
-          <xref target="RFC9774"/> specifies that "treat-as-withdraw" error handling <xref target="RFC7606"/> MUST be applied to routes with AS_SET in the AS_PATH.
-        </t>
-        <t>
-          If an attacker creates a route leak intentionally, they may try to strip their AS from the AS_PATH.
-          To partly guard against that, a check is necessary to match the most recently added AS in the AS_PATH to the BGP neighbor's ASN, with the exception when a route is received from a transparent Internet Exchange (IX).
-          This AS_PATH check is specified in Section 6.3 of <xref target="RFC4271"/> and its handling is updated in <xref target="RFC7606"/>.
-        </t>
-        <t>
-          If above mentioned AS_PATH checks are implemented, they MUST be applied before ASPA procedures.
-          In case ASPA procedures are applied to AS_PATH and these checks fail, routes are given Invalid evaluation in the AS_PATH verification procedures.
         </t>
       </section>
 
@@ -616,7 +616,7 @@ authorized(AS x, AS y) =   / Else, "Provider+" if the U-SPAS entry
             The implementation NIST-BGP-SRx <xref target="BGP-SRx"/> is a software suite that provides a validation engine (BGP-SRx) and a Quagga-based BGP router (Quagga-SRx).
             It includes unit test cases for testing the ASPA-based path verification.
             It was provided by Oliver Borchert, Kyehwan Lee, and their colleagues at US NIST.
-            The current implementation does not support IXP/RS enhancements to the algorithm.
+            The current implementation does not support IX RS enhancements to the algorithm.
           </li>
           <li>
             Implementation of ASPA-based AS_PATH verification in the FreeRTR <xref target="FreeRTR"/> is provided by Csaba Mate.
