@@ -182,7 +182,7 @@
     <section title="ASPA Registration Recommendations" anchor="rec1">
       <t>
         ASPA registration improves the accuracy of ASPA-based AS_PATH verification in routing systems.
-        An ASPA registration MUST list the union of all Provider ASes and all non-transparent RS ASes at which the CAS is an RS-client.
+        An ASPA registration MUST list the union of all non-transparent RS ASes at which the CAS is an RS-client and all Provider ASes for the CAS.
         An AS MUST include a Provider AS in its SPAS regardless of whether it provides connectivity for only IPv4 or only IPv6 or both.
       </t>
       <t>
